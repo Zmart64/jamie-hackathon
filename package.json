@@ -1,0 +1,26 @@
+{
+  "name": "strain",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24.14.0 <25"
+  },
+  "scripts": {
+    "check": "make check",
+    "lint": "eslint --config eslint.config.mjs . --max-warnings 0",
+    "typecheck": "tsc --noEmit && pyright",
+    "format:check": "prettier . --check",
+    "format": "prettier . --write"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "eslint": "10.13.0",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "pyright": "1.1.414",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2"
+  }
+}
