@@ -1,6 +1,7 @@
 pnpm-lock.yaml
 uv.lock
 .venv/
+.tools/
 node_modules/
 dist/
 build/
