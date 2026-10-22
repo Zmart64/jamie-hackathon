@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import prettier from "eslint-config-prettier";
+import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -36,6 +37,31 @@ export default defineConfig(
   {
     files: ["*.config.{js,mjs,cjs}", "scripts/**/*.{js,mjs,cjs,ts,mts,cts}"],
     languageOptions: { globals: globals.node },
+  },
+  {
+    files: ["apps/web/src/**/*.{ts,tsx}"],
+    extends: [reactHooks.configs.flat.recommended],
+    languageOptions: { globals: globals.browser },
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "react-icons",
+                "react-icons/*",
+                "@heroicons/*",
+                "@tabler/icons-react",
+                "@phosphor-icons/*",
+                "@untitledui/icons*",
+              ],
+              message: "Use lucide-react so the prototype has one consistent icon family.",
+            },
+          ],
+        },
+      ],
+    },
   },
   prettier,
 );

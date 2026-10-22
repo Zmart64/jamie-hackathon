@@ -1,6 +1,7 @@
 # Working in Strain
 
-This is the product monorepo. It currently contains quality tooling only.
+This is the product monorepo. It contains quality tooling and the interview
+prototype in `apps/web`. Read `apps/web/AGENTS.md` before frontend changes.
 
 - Put deployable applications in `apps/` and reusable libraries in `packages/`
   when they are needed. Do not create empty apps or speculative abstractions.

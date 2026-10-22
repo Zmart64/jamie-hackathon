@@ -35,9 +35,11 @@ check: | require-mise
 	mise exec -- pnpm run format:check
 	mise exec -- uv run --locked python scripts/check_size.py
 	$(MAKE) test
+	mise exec -- pnpm run build
 
 test: | require-mise
 	mise exec -- uv run --locked pytest
+	mise exec -- pnpm --filter @strain/web test
 
 security: | require-mise
 	.tools/actionlint -shellcheck= -pyflakes=
