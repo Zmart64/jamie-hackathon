@@ -2,7 +2,8 @@
 
 Product monorepo, currently containing quality tooling only.
 
-Requires Git, make, Node **24.22.0**, pnpm **11.25.0**, and uv **0.13.1**.
+Requires Git, make, Node **24.22.0**, pnpm **11.25.0**, and uv **>=0.13.1,<0.14**
+(CI uses **0.13.1**).
 Supports macOS and Linux; use WSL2 on Windows. uv installs the pinned Python version.
 
 ```sh

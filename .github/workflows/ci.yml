@@ -30,7 +30,8 @@ jobs:
         run: npm install --global "$(node -p 'require("./package.json").packageManager')"
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          version-file: pyproject.toml
+          # Keep the tested baseline; prefer releases aged 30 days for upgrades.
+          version: "0.13.1"
           enable-cache: false
       - run: make setup
       - run: make check

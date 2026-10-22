@@ -4,11 +4,15 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 30
     open-pull-requests-limit: 3
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 30
     open-pull-requests-limit: 3
     ignore:
       # Keep Node types on the runtime's major; revisit when upgrading Node.
@@ -22,4 +26,6 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 30
     open-pull-requests-limit: 3
