@@ -6,14 +6,14 @@ This is the product monorepo. It currently contains quality tooling only.
   when they are needed. Do not create empty apps or speculative abstractions.
 - Read the nearest instructions and existing code before editing. Keep each
   change focused on the requested behavior.
-- Use the pinned Python 3.13 and pnpm versions. Local uv versions matching
-  `pyproject.toml` are supported; CI pins a tested uv version. Prefer stable tool
-  releases at least 30 days old; review breaking upgrades separately. Dependabot
-  delays routine updates by 30 days; urgent security fixes may bypass the wait.
-  CI pins Node's patch version; local Node 24 versions matching `package.json`
-  are supported. Commit lockfile updates with dependency changes.
-  Run `make setup` in each new clone/worktree;
-  it installs dependencies, tools, and the shared pre-push hook.
+- Install Git, make, and mise, then run `make setup` in each new clone/worktree.
+  Make targets use mise's pinned Node, pnpm, and uv from `mise.toml`; uv manages
+  Python 3.13 from `.python-version`. Shell activation is not required. Keep the
+  Node and pnpm pins aligned with `.node-version` and `package.json`.
+  Setup installs dependencies, tools, and the shared pre-push hook.
+  Prefer stable tool releases at least 30 days old; review breaking upgrades
+  separately. Dependabot delays routine updates by 30 days; urgent security fixes
+  may bypass the wait. Commit lockfile updates with dependency changes.
 - Run `make check` before finishing; it is the same command CI uses. Report any
   checks you could not run. `make format` applies safe lint fixes and formatting.
 - Python uses strict Pyright and requires public return annotations. Prefer

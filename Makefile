@@ -1,9 +1,11 @@
-.PHONY: setup hooks check format test security
+.PHONY: setup hooks check format test security dev require-mise
 
-setup:
-	uv sync --locked
-	pnpm install --frozen-lockfile
-	uv run --locked python scripts/install_tools.py
+setup: | require-mise
+	mise trust mise.toml
+	mise install
+	mise exec -- uv sync --locked
+	mise exec -- pnpm install --frozen-lockfile
+	mise exec -- uv run --locked python scripts/install_tools.py
 	@if [ "$(INSTALL_HOOKS)" != "0" ]; then $(MAKE) hooks; fi
 
 hooks:
@@ -24,26 +26,35 @@ hooks:
 	fi; \
 	git config --local core.hooksPath .githooks
 
-check:
+check: | require-mise
 	$(MAKE) security
-	uv run --locked ruff check --config pyproject.toml .
-	uv run --locked ruff format --config pyproject.toml --check .
-	pnpm run lint
-	pnpm run typecheck
-	pnpm run format:check
-	uv run --locked python scripts/check_size.py
+	mise exec -- uv run --locked ruff check --config pyproject.toml .
+	mise exec -- uv run --locked ruff format --config pyproject.toml --check .
+	mise exec -- pnpm run lint
+	mise exec -- pnpm run typecheck
+	mise exec -- pnpm run format:check
+	mise exec -- uv run --locked python scripts/check_size.py
 	$(MAKE) test
 
-test:
-	uv run --locked pytest
+test: | require-mise
+	mise exec -- uv run --locked pytest
 
-security:
+security: | require-mise
 	.tools/actionlint -shellcheck= -pyflakes=
 	.tools/gitleaks git --redact --verbose --no-banner --log-opts=--all
 	.tools/gitleaks git --redact --verbose --no-banner --pre-commit --staged
-	uv run --locked python scripts/check_secrets.py
+	mise exec -- uv run --locked python scripts/check_secrets.py
 
-format:
-	uv run --locked ruff check --config pyproject.toml --fix .
-	uv run --locked ruff format --config pyproject.toml .
-	pnpm run format
+format: | require-mise
+	mise exec -- uv run --locked ruff check --config pyproject.toml --fix .
+	mise exec -- uv run --locked ruff format --config pyproject.toml .
+	mise exec -- pnpm run format
+
+dev: | require-mise
+	mise exec -- pnpm run dev
+
+require-mise:
+	@command -v mise >/dev/null 2>&1 || { \
+		echo "Install mise and add it to PATH, then run make setup: https://mise.jdx.dev/getting-started.html" >&2; \
+		exit 1; \
+	}
