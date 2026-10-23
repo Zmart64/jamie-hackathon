@@ -1,63 +1,68 @@
-# Prototype UI decision
+# Dashboard starter
 
-Decision: use a small **free Untitled UI + React Aria** foundation with **Lucide**.
-Reviewed on 22 October 2026 with a second agent. Optimize for four people building
-a coherent interview prototype quickly, with Linear's visual restraint.
+The app uses React 19, Vite, TypeScript, Tailwind CSS 4, shadcn/ui with Radix
+primitives, Lucide icons and Recharts. It is a client-only dashboard based on the
+[official dashboard example](https://ui.shadcn.com/examples/dashboard).
+`components.json` records the `new-york` style and import aliases.
+All dashboard components come from the free, MIT-licensed shadcn/ui registry;
+no paid/PRO components or licenses are required.
 
-| Option      | Benefits for this prototype                                                                                                            | Costs                                                                                                                    |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Untitled UI | More pre-decided visual patterns; coherent semantic tokens; free navigation, tables, tabs and controls; first-party Figma relationship | Full page examples are PRO; imported code needs review; adapting to an exact Linear clone would lose the speed advantage |
-| shadcn/ui   | Small, flexible, fully MIT foundation; easy to add individual components; good for a bespoke execution inspector                       | More page composition and visual decisions fall to the team                                                              |
+The previous interview screens and Untitled UI/React Aria dependencies are removed.
+The dashboard contains sidebar navigation, four metric cards,
+a visitor area chart and a document table. Dashboard is the only navigation entry
+and links to the root page; analytics and documents are sections of that page.
+The sidebar uses the standard non-collapsing API, with a compact, always-visible
+icon rail below 768px. Company and page headers share a height and border baseline.
+The account footer uses a local placeholder picture and a shadcn dropdown with
+Account, Settings and Log out. These entries intentionally perform no action;
+selecting one only dismisses the menu. The header shows the current page title
+without a theme toggle. The shadcn Vite theme provider preserves a previously saved
+theme preference and defaults to light. Sample metrics are not live business data.
 
-Both provide editable source and both can produce clean, accessible interfaces.
-Untitled wins narrowly here because consistency and speed of assembly matter more
-than maximal flexibility. No paid assets or account are required for this setup.
-This is an adapted subset of free components, not the complete Untitled catalog
-or a drop-in implementation of every upstream prop. Add capabilities as needed.
+Documents use the example's fixture data. Search, status filters, page selection,
+column visibility, pagination, adding, editing, deletion and undo work in memory.
+Refreshing restores the fixtures. There is no authentication, backend or deployment
+configuration. The chart displays fixed dates ending June 30, 2024; selecting a
+range uses exactly 7, 30 or 90 samples, independent of the current date.
 
-The [vendor comparison](https://www.untitledui.com/blog/untitled-ui-vs-shadcn)
-correctly highlights composition as a cost. Its component totals include variants
-and should not be treated as an apples-to-apples measure of usefulness. Complete
-paid pages are also a different offering from the free subset used here.
+## Source integration
 
-The two systems can coexist in React, but that does not align their APIs, form
-contexts, primitive dependencies or tokens. We choose one system for the
-prototype; adding both is not a shortcut. Sources:
-[Untitled introduction](https://www.untitledui.com/react/docs/introduction),
-[free sidebar patterns](https://www.untitledui.com/react/components/sidebar-navigations),
-[free tables](https://www.untitledui.com/react/components/tables),
-[shadcn introduction](https://ui.shadcn.com/docs),
-[Untitled license and MIT exception](https://www.untitledui.com/license).
+Components were installed with the official shadcn CLI from `dashboard-01`.
+Source and license are in `src/components/NOTICE.md`. The starter keeps the
+example's layout and shadcn component styling, with these integration changes:
 
-## Visual direction and glass
+- Lucide replaces the example's Tabler icons, keeping one icon family.
+- The sidebar is separated into state/context, layout and menu modules. Its
+  skeleton width is deterministic and its mobile hook uses `useSyncExternalStore`.
+- The chart tooltip exposes only the dot tooltip this dashboard uses, with a
+  typed Recharts boundary. Unsupported generic tooltip/legend variants are omitted.
+- The example's table is composed from shadcn primitives with local state and a
+  sheet editor. This avoids unused drag-and-drop and table-engine dependencies.
+- The Vite theme provider supports light/dark mode and tolerates unavailable local
+  storage. It avoids the Next.js-specific theme script in a client-only app.
+- Chart and toast colors wrap the supplied HSL tokens in `hsl()`; their numeric
+  values are unchanged. Sidebar aliases derive from the same palette.
 
-Adopt Linear's hierarchy and restraint, not a pixel-for-pixel copy: quiet
-navigation, consistent actions, limited accent color, clear type and gentle
-borders. Readability in screen sharing matters more than decorative effects.
-[Linear's design explanation](https://linear.app/now/behind-the-latest-design-refresh)
-describes reducing navigation and separator emphasis.
+Standard strict type, lint, source-size and formatting checks cover all UI source.
+No vendor error baseline, `skipLibCheck`, or UI exclusions are used.
 
-Liquid Glass can work for a small navigation/control surface. Apple's guidance
-places it above content, not across evidence or tables. macOS 27's refinements
-do not make native material rendering a free capability of a React website.
-Our assessment: simulated refraction adds implementation and visual QA cost
-without improving this interview. Start opaque. A restrained translucent header
-can be evaluated later with an opaque fallback and reduced-transparency support.
-Sources: [Apple materials guidance](https://developer.apple.com/design/human-interface-guidelines/materials),
-[macOS 27 AppKit design updates](https://developer.apple.com/videos/play/wwdc2026/289/).
+## Dependency compatibility
 
-## Scope and checks
+Recharts 3.10.1 depends on Redux Toolkit. A declaration-only pnpm patch for
+`@reduxjs/toolkit@2.13.0` keeps library checking enabled with TypeScript 6 and
+`exactOptionalPropertyTypes`. It preserves optionality in the thunk config
+intersection instead of remapping it through `Id`, and declares the existing
+`TaskAbortError` behavior where `code` may be undefined. Runtime code is unchanged.
+Remove the patch when upstream declarations support these settings.
 
-The sample refund view demonstrates the theme, controls, evidence and reset/search
-behavior. It is a starting point, not a selected hackathon scenario or working
-security product. No backend, authentication, deployment or shared UI package.
+Most new versions are at least 30 days old. Radix 1.8.1 is a deliberate exception:
+1.6.7's select/popper declarations conflict under exact optional-property checking.
+The current version passes the same strict checks without a Radix patch.
 
-The root TypeScript check excludes `apps/web` because its own config extends the
-same strict settings and is explicitly invoked by the root typecheck command.
-This preserves coverage while allowing browser/JSX settings. Frontend tests and
-Vite's production build are part of `make check`; existing gates remain intact.
-Vitest 4 is pinned because Vitest 5's assertion types conflict with the installed
-Testing Library matchers under full declaration checking; no `skipLibCheck`.
+## Development
 
-Keep new components small and tested. Use `pnpm --filter @strain/web test` for
-focused development, then `make check` before sharing changes.
+Run `make dev` from the repository root. Use `make format` and `make check` before
+finishing changes. Vitest and Testing Library cover filtering, empty-state
+recovery, pagination, selection, column visibility, form validation, edit/delete/
+undo, chart range selection, theme storage fallback, persistent navigation and account
+menu keyboard behavior and placeholder actions.

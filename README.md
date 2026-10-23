@@ -1,6 +1,6 @@
 # Strain
 
-Product monorepo with shared quality tooling and a local interview prototype.
+Product monorepo with shared quality tooling and a local dashboard starter.
 
 Install **Git**, **make**, and **[mise](https://mise.jdx.dev/getting-started.html)**
 and make sure all three commands are on `PATH`. Supports macOS and Linux;
@@ -47,9 +47,12 @@ See [AGENTS.md](AGENTS.md) for coding rules.
 
 ## Hackathon prototype
 
-`apps/web` uses React, Vite, TypeScript, Tailwind, selected free Untitled UI
-components and Lucide icons. The reference screen uses simulated refund evidence;
-it does not connect to an agent or payment system or commit us to that scenario.
+`apps/web` uses React, Vite, TypeScript, Tailwind CSS 4, shadcn/ui (Radix),
+Lucide icons and Recharts. It starts from the official
+[shadcn dashboard example](https://ui.shadcn.com/examples/dashboard), with the
+orange light/dark theme and sidebar. Only free shadcn/ui components are used.
+Metrics and documents are
+sample data; document edits last until refresh. No backend is connected.
 `make check` includes frontend interaction tests and the production build.
 
 Read [the design conventions](apps/web/AGENTS.md) and
@@ -73,26 +76,17 @@ make dev
 For a task, create your own branch from `prototype/hackathon` and target that
 integration branch when opening the PR.
 
-### Optional Untitled UI MCP
+### Adding UI components
 
-The frontend runs without an MCP connection. Each teammate who wants component
-discovery in Codex configures the official server in their own Codex MCP settings,
-or adds this table to their user `~/.codex/config.toml` (only once):
+The shadcn configuration is in `apps/web/components.json`. Reuse components from
+`apps/web/src/components/ui` first. To add one from the official registry:
 
-```toml
-[mcp_servers.untitledui]
-url = "https://www.untitledui.com/react/api/mcp"
-enabled = true
+```sh
+mise exec -- pnpm dlx shadcn@latest add <component> -c apps/web
+make format
+make check
 ```
 
-Start a new Codex session and ask it to search the Untitled UI MCP for free table
-components. Free access needs no purchase or login. OAuth is optional for PRO
-access; the CLI's add command may automatically open that sign-in flow.
-See the [official MCP guide](https://www.untitledui.com/react/integrations/mcp).
-
-Reuse our shared components first, use MCP discovery for missing patterns, then
-adapt selected free source to the existing theme and Lucide icons. The current
-components are manually adapted subsets, not a CLI-initialized Untitled starter;
-automatic installation needs its paths/configuration checked first. Do not run a
-starter initializer over this app or replace our shared controls wholesale.
-Keep account credentials and personal Codex configuration outside the repository.
+Review generated source and dependency changes before keeping them. Pin new
+dependencies, preserve the theme, and keep the standard strict checks enabled.
+See `apps/web/DESIGN.md` for local integration details and source attribution.
