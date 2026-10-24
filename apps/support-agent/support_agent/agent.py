@@ -135,6 +135,11 @@ class SupportAgent:
                 _record_tools(turn, message, response)
             elif message.stop_reason in ("end_turn", "refusal", "stop_sequence"):
                 reply = "\n".join(block.text for block in message.content if block.type == "text")
+                if not reply.strip() and message.stop_reason == "refusal":
+                    reply = "I can't help with that request."
+                    turn.reply_source = "refusal_fallback"
+                    session.history.append({"role": "assistant", "content": reply})
+                    return reply
                 if not reply.strip():
                     raise AgentFailure("empty_response", "Claude returned no text reply.")
                 session.history.append(message.to_param())
