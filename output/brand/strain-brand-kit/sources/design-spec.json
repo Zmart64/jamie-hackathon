@@ -1,0 +1,17 @@
+{
+  "name": "Strain",
+  "direction": "Evolve",
+  "date": "2026-10-24",
+  "font": "IBM Plex Sans",
+  "wordmarkWeight": 700,
+  "unitsPerEm": 1000,
+  "trackingInFontUnits": -24,
+  "wordmarkViewBox": [0, 0, 3536, 770],
+  "primary": "#2563EB",
+  "primaryDark": "#93C5FD",
+  "neutral": "#18181B",
+  "clearSpaceCapHeightRatio": 0.5,
+  "minimumWordmarkWidthPx": 120,
+  "minimumIconWidthPx": 24,
+  "faviconExceptionPx": 16
+}

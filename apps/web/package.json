@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@xyflow/react": "12.11.6",
     "class-variance-authority": "0.7.1",
     "cn": "0.3.2",
     "lucide-react": "1.61.0",

@@ -1,29 +1,38 @@
-# Dashboard starter
+# App shell
 
 The app uses React 19, Vite, TypeScript, Tailwind CSS 4, shadcn/ui with Radix
-primitives, Lucide icons and Recharts. It is a client-only dashboard based on the
+primitives and Lucide icons. It is a client-only prototype whose shell is based on the
 [official dashboard example](https://ui.shadcn.com/examples/dashboard).
 `components.json` records the `new-york` style and import aliases.
-All dashboard components come from the free, MIT-licensed shadcn/ui registry;
+All shared UI components come from the free, MIT-licensed shadcn/ui registry;
 no paid/PRO components or licenses are required.
 
 The previous interview screens and Untitled UI/React Aria dependencies are removed.
-The dashboard contains sidebar navigation, four metric cards,
-a visitor area chart and a document table. Dashboard is the only navigation entry
-and links to the root page; analytics and documents are sections of that page.
+The home page (`/`) and `/agents` both open the agent inventory. The dashboard
+page, its metrics, chart, document table, and navigation entry have been removed
+from the app. The sidebar's Red Team group contains Agents; a matching Security
+group below it contains the intentionally inert Agent Firewall button.
+History API routes preserve in-memory agents and assessments when moving
+between the home page, inventory, and individual agents. Each agent has a UUID
+and a `/agents/<uuid>` URL. Agent pages show an Agents → agent name breadcrumb
+in the header; browser Back and Forward also work. A deployed host must serve
+the app entry point for these paths (Vite handles this during development).
 The sidebar uses the standard non-collapsing API, with a compact, always-visible
 icon rail below 768px. Company and page headers share a height and border baseline.
 The account footer uses a local placeholder picture and a shadcn dropdown with
-Account, Settings and Log out. These entries intentionally perform no action;
+Account and Log out. These entries intentionally perform no action;
 selecting one only dismisses the menu. The header shows the current page title
 without a theme toggle. The shadcn Vite theme provider preserves a previously saved
-theme preference and defaults to light. Sample metrics are not live business data.
+theme preference and defaults to light.
 
-Documents use the example's fixture data. Search, status filters, page selection,
-column visibility, pagination, adding, editing, deletion and undo work in memory.
-Refreshing restores the fixtures. There is no authentication, backend or deployment
-configuration. The chart displays fixed dates ending June 30, 2024; selecting a
-range uses exactly 7, 30 or 90 samples, independent of the current date.
+The Company sidebar group sits at the bottom, above the account footer, and
+contains Settings, API Keys and Billing in that order. Its buttons support hover
+and keyboard focus, with accessible icons in the mobile rail. These are intentionally
+inert placeholders: clicking or activating them leaves the page unchanged.
+
+The original dashboard's standalone components and their tests remain in the
+source tree but are not imported into the app. There is no authentication, backend
+or deployment configuration.
 
 ## Source integration
 
@@ -34,14 +43,30 @@ example's layout and shadcn component styling, with these integration changes:
 - Lucide replaces the example's Tabler icons, keeping one icon family.
 - The sidebar is separated into state/context, layout and menu modules. Its
   skeleton width is deterministic and its mobile hook uses `useSyncExternalStore`.
-- The chart tooltip exposes only the dot tooltip this dashboard uses, with a
+- The original chart tooltip exposes only the example's dot tooltip, with a
   typed Recharts boundary. Unsupported generic tooltip/legend variants are omitted.
 - The example's table is composed from shadcn primitives with local state and a
   sheet editor. This avoids unused drag-and-drop and table-engine dependencies.
 - The Vite theme provider supports light/dark mode and tolerates unavailable local
   storage. It avoids the Next.js-specific theme script in a client-only app.
-- Chart and toast colors wrap the supplied HSL tokens in `hsl()`; their numeric
-  values are unchanged. Sidebar aliases derive from the same palette.
+- Chart and toast colors wrap the HSL tokens in `hsl()`. Sidebar aliases derive
+  from the same palette.
+
+## Brand system
+
+The selected identity is Evolve with cobalt/Zinc colors, IBM Plex Sans for the UI
+and wordmark, and IBM Plex Mono for code and trace identifiers. `src/brand.css`
+owns the light/dark semantic colors and locally hosted font declarations;
+`src/styles.css` imports it and maps tokens to Tailwind utilities. Use these roles
+instead of adding component-specific colors. The wordmark uses IBM Plex Sans Bold
+outlines with cobalt AI letters. The compact AI icon appears in the mobile rail.
+
+Production SVGs are in `public/brand`, and font files and their OFL licenses are
+in `public/fonts`. The favicon, Apple touch icon, and web manifest use the same
+monogram. The manifest supplies home-screen metadata, not offline functionality.
+Button and badge variants use paired destructive foreground tokens in both
+themes; primary hover uses its dedicated token. See `../../brand/README.md` for
+asset use, typography, source details, and the complete downloadable kit.
 
 Standard strict type, lint, source-size and formatting checks cover all UI source.
 No vendor error baseline, `skipLibCheck`, or UI exclusions are used.
@@ -66,3 +91,53 @@ finishing changes. Vitest and Testing Library cover filtering, empty-state
 recovery, pagination, selection, column visibility, form validation, edit/delete/
 undo, chart range selection, theme storage fallback, persistent navigation and account
 menu keyboard behavior and placeholder actions.
+
+## Agents demo
+
+The Agents workspace composes the existing shadcn primitives with the official
+Breadcrumb, Dialog, Progress, and Textarea components, added through the pinned shadcn CLI
+on October 24, 2026 after consulting the shadcn MCP registry and examples.
+The Progress integration forwards its value
+to the Radix root so assistive technology can announce the numeric progress.
+
+The demo includes six sample agents and these interactions:
+
+- Agent search with empty-state recovery and Add agent in the top navigation bar.
+- One add-agent modal with a name, connection method, and URL (email address for
+  Mail). Browser is preselected; API endpoint and Mail are also available.
+- Add creates an untested agent. Assessments start explicitly from its detail page.
+- Timed simulated scans through connection, discovery, planning, execution, and
+  verification. No connection address is contacted and no credentials are needed.
+- A left-to-right assessment canvas with compact shadcn node cards, smooth branching
+  connectors, pan/zoom controls, fit-to-view, and a minimap. Finding branches expand
+  into attack, verification, and finding steps. Selecting a node opens evidence in
+  a shadcn Sheet. Blocked and inconclusive paths always remain visible.
+  Mobile keeps the horizontal layout and starts with the first step in view.
+- Step-by-step recorded-attempt replay and scan history. Previous assessments
+  are opened through History.
+- Retesting with a demo fix creates a new full assessment. The chosen finding
+  stops reproducing; other findings and previous evidence remain.
+- Untested agents, a recoverable simulated connection failure, incomplete tests,
+  and unknown permissions.
+
+All data is in React state and resets on refresh. Deep links to newly added
+agents therefore show a recovery page after refresh. Sample scans use fixed
+historical dates; newly started scans show the actual time in Europe/Berlin.
+The canvas uses the free MIT-licensed React Flow engine (`@xyflow/react` 12.11.6,
+released September 1, 2026), with custom shadcn cards, badges, and controls. The
+reference screenshot guides the layout; no paid registry components are used.
+React Flow's attribution remains visible. The graph pans inside a bounded viewport;
+only the inventory table uses horizontal scrolling. Nodes are recorded assessment
+steps, so dragging, connecting, and deleting nodes are disabled. Arrow keys pan
+the focused canvas; tabbing to a step centers it before inspection.
+
+React Flow's `@xyflow/system` 0.0.82 declarations have an
+[upstream optional-property compatibility issue](https://github.com/xyflow/xyflow/issues/6038).
+`patches/@xyflow__system@0.0.82.patch` adds explicit `undefined` to the 21 optional
+`NodeBase` fields that generic internal-node types already expose. The patch touches
+only ESM/UMD declarations and leaves runtime code unchanged. Strict typing and
+library checking remain enabled. Remove the patch when upstream fixes these types.
+Behavioral tests cover setup validation, default Browser connection, search,
+left-to-right graph connections, branch expansion/collapse, zoom, evidence-sheet
+focus recovery, branch selection, replay, failure recovery, explicit scan starts, and selecting
+preserved assessments from History.
