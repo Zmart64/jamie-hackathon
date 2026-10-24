@@ -25,7 +25,7 @@ it("animates only the active reply and restores the launcher when closed", async
     const avatars = container.querySelectorAll(".chat-sprout .sprout");
     expect(avatars).toHaveLength(1);
     expect(avatars[0]).toHaveAttribute("data-mood", "replying");
-    expect(screen.getByRole("log")).toHaveTextContent("A little help");
+    expect(screen.getByRole("log")).toHaveTextContent("Ask me anything");
     await act(() => vi.advanceTimersByTimeAsync(2000));
     expect(activeAvatars()).toHaveLength(0);
 
@@ -47,11 +47,11 @@ it("thinks before and between replies, with one avatar throughout the message gr
   const avatar = () => container.querySelector(".chat-sprout .sprout");
   try {
     expect(avatar()).toHaveAttribute("data-mood", "thinking");
-    expect(screen.getByRole("status")).toHaveTextContent("Sprout is thinking");
+    expect(screen.getByRole("status")).toHaveTextContent("Thinking…");
     await act(() => vi.advanceTimersByTimeAsync(480));
     expect(avatar()).toHaveAttribute("data-mood", "replying");
-    await act(() => vi.advanceTimersByTimeAsync(500));
-    expect(screen.getByText("Hi, I’m Sprout, your login agent.")).toBeVisible();
+    await act(() => vi.advanceTimersByTimeAsync(700));
+    expect(screen.getByText("Hi, I’m Sprout, your Carbon Zero agent.")).toBeVisible();
     expect(avatar()).toHaveAttribute("data-mood", "thinking");
 
     fireEvent.click(screen.getByRole("button", { name: "Dismiss helper" }));
@@ -64,7 +64,7 @@ it("thinks before and between replies, with one avatar throughout the message gr
     expect(avatar()).toHaveAttribute("data-mood", "replying");
     expect(screen.getByRole("log")).toHaveTextContent("A little help");
     const firstRow = screen
-      .getByText("Hi, I’m Sprout, your login agent.")
+      .getByText("Hi, I’m Sprout, your Carbon Zero agent.")
       .closest(".chat-agent-row");
     expect(firstRow?.querySelector(".sprout")).toBeNull();
     await act(() => vi.advanceTimersByTimeAsync(3000));
@@ -133,7 +133,7 @@ it("sleeps after 30 quiet seconds, resets on typing, and wakes when reopened", a
   }
 });
 
-it("moves Sprout from the thinking bubble to the received backend reply", async () => {
+it("moves Sprout from the thinking status to the received backend reply", async () => {
   const offset = vi.spyOn(HTMLElement.prototype, "offsetTop", "get").mockImplementation(function (
     this: HTMLElement,
   ) {

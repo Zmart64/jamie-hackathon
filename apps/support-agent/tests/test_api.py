@@ -10,6 +10,17 @@ from support_agent.settings import Settings
 from .helpers import ClaudeStub, claude_message, reply, start_session, tool_call
 
 
+def test_model_receives_sprouts_carbon_zero_identity(api: TestClient, claude: ClaudeStub) -> None:
+    session_id = start_session(api)
+    claude.responses.append(reply("How can I help with your account?"))
+    response = api.post(f"/sessions/{session_id}/messages", json={"message": "Who are you?"})
+    assert response.status_code == 200
+    prompt = str(claude.requests[0]["system"])
+    assert "Sprout" in prompt
+    assert "Carbon Zero" in prompt
+    assert "ExampleApp" not in prompt
+
+
 def test_empty_refusal_returns_identified_fallback_and_can_continue(
     api: TestClient, claude: ClaudeStub
 ) -> None:
@@ -94,6 +105,7 @@ def test_tool_chain_records_actual_email_delivery_without_fabricating_verificati
     assert state.accounts[0].verified is False
     assert len(state.outbox) == 1  # SDK result inspection must not execute the tool twice.
     assert state.outbox[0].to == "demo-inbox@example.com"
+    assert state.outbox[0].subject == "Reset your Carbon Zero password"
     other = MockStateSnapshot.model_validate(
         api.get(f"/sessions/{other_session}/mock-state").json()
     )

@@ -57,7 +57,7 @@ export function LoginHelper({
         >
           <X aria-hidden="true" />
         </Button>
-        <SupportChat active={open} />
+        <SupportChat active={open} topic={topic} openRequest={openRequest} />
       </section>
       <Button
         ref={launcherRef}

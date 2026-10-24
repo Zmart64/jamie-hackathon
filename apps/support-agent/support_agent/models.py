@@ -110,7 +110,7 @@ class MockEmail(BaseModel):
     id: str = Field(default_factory=new_id)
     account_id: str
     to: str
-    subject: str = "Reset your ExampleApp password"
+    subject: str = "Reset your Carbon Zero password"
     reset_url: str
     created_at: datetime = Field(default_factory=timestamp)
 
