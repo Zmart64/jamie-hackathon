@@ -52,16 +52,18 @@ Point S is three slabs sheared at 14°: a thin top cap flush right, a heavy
 full-width core and a thin bottom cap flush left. It is point-symmetric, so it
 reads the same rotated 180°.
 
-| File                    | Use                                                 |
-| ----------------------- | --------------------------------------------------- |
-| `mark-ink.svg`          | Flat bare mark on light surfaces                    |
-| `mark-bone.svg`         | Flat bare mark on dark surfaces                     |
-| `favicon.svg`           | Flat ink tile; browser favicons at 16–48px          |
-| `app-icon.svg`          | Ink tile, photoelastic core; app icons, mobile rail |
-| `app-icon-bone.svg`     | Bone tile, photoelastic core; light presentations   |
-| `app-icon-maskable.svg` | Square, mark inside the platform safe area          |
-| `wordmark-light.svg`    | Ink lockup with photoelastic core; light surfaces   |
-| `wordmark-dark.svg`     | Bone lockup with photoelastic core; dark surfaces   |
+| File                    | Use                                                    |
+| ----------------------- | ------------------------------------------------------ |
+| `mark-ink.svg`          | Flat bare mark on light surfaces                       |
+| `mark-bone.svg`         | Flat bare mark on dark surfaces                        |
+| `mark-core-ink.svg`     | Square mark, photoelastic core; in-app on light (rail) |
+| `mark-core-bone.svg`    | Square mark, photoelastic core; in-app on dark (rail)  |
+| `favicon.svg`           | Flat ink tile; browser favicons at 16–48px             |
+| `app-icon.svg`          | Ink tile, photoelastic core; app and home-screen icons |
+| `app-icon-bone.svg`     | Bone tile, photoelastic core; light presentations      |
+| `app-icon-maskable.svg` | Square, mark inside the platform safe area             |
+| `wordmark-light.svg`    | Ink lockup with photoelastic core; light surfaces      |
+| `wordmark-dark.svg`     | Bone lockup with photoelastic core; dark surfaces      |
 
 Do not edit these files by hand. Change the generator, then run
 `uv run python scripts/generate_brand_assets.py --rasters` (needs `rsvg-convert`
@@ -79,7 +81,9 @@ The photoelastic gradient is the only brand gradient: violet `#7C6CFF` → cyan
 `#3FD0E0` → lime `#E9F46A` → pink `#FF8FB1` → violet `#9B7BFF`, running along
 the slip direction. It is deliberately bright and stylized rather than a
 realistic fringe pattern. It appears on the core slab of the mark only, in the
-sidebar lockup, app icons from 32px, hero and social art. CSS uses the
+sidebar lockup, the compact sidebar mark, app icons from 32px, hero and social
+art. Inside the app the mark sits directly on the surface; tiles are for app and
+home-screen icons only. CSS uses the
 `--photoelastic` token in `brand.css`.
 
 Browser favicons, the bare marks and everyday UI stay flat. Never use the

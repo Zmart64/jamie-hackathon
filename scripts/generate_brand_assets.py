@@ -114,6 +114,9 @@ def build_svgs(outlines: str) -> dict[str, str]:
     return {
         "mark-ink.svg": _doc(mark_viewbox, slabs(INK, INK), "Strain mark"),
         "mark-bone.svg": _doc(mark_viewbox, slabs(BONE, BONE), "Strain mark"),
+        # Square, untiled marks for in-app use, e.g. the compact sidebar rail.
+        "mark-core-ink.svg": _doc("0 0 64 64", gradient + slabs(INK, core), "Strain"),
+        "mark-core-bone.svg": _doc("0 0 64 64", gradient + slabs(BONE, core), "Strain"),
         "favicon.svg": _doc(
             "0 0 64 64", _tile(INK, BONE, BONE, TILE_RADIUS, TILE_MARK_SCALE), "Strain"
         ),

@@ -26,7 +26,8 @@ def test_mark_is_point_symmetric_about_the_grid_center() -> None:
 
 def test_gradient_stays_on_the_core_slab_and_off_small_icons() -> None:
     assert "Gradient" not in SVGS["favicon.svg"]
-    for name in ("app-icon.svg", "wordmark-light.svg", "wordmark-dark.svg"):
+    names = ("app-icon.svg", "mark-core-ink.svg", "mark-core-bone.svg", "wordmark-light.svg")
+    for name in (*names, "wordmark-dark.svg"):
         # One gradient reference: the core slab. Caps and letters stay solid.
         assert SVGS[name].count("url(#core)") == 1, name
 
