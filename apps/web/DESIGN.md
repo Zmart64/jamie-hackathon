@@ -69,7 +69,7 @@ ochre bar, always with the level as a word.
 
 The lockup pairs the mark with solid one-color IBM Plex Sans Bold outlines. The
 bright photoelastic gradient appears only on the mark's core slab: in the sidebar
-lockup, the mobile-rail icon and the app icons. Browser favicons stay flat.
+lockup, the untiled mark in the compact rail, and the app icons. Browser favicons stay flat.
 Production SVGs, PNGs and the ICO in `public/brand` come from
 `scripts/generate_brand_assets.py`; do not edit them by hand. Font files and their
 OFL licenses are in `public/fonts`. The manifest supplies home-screen metadata,
