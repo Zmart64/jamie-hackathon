@@ -1,4 +1,4 @@
-.PHONY: setup hooks check format test security dev dev-demo support-agent attacker-agent require-mise
+.PHONY: setup hooks check format test security dev dev-demo support-agent attacker-agent redteam redteam-check redteam-rehearsal require-mise
 
 setup: | require-mise
 	mise trust mise.toml
@@ -63,6 +63,15 @@ dev-demo: | require-mise
 
 attacker-agent: | require-mise
 	mise exec -- uv run --locked attacker-agent
+
+redteam: | require-mise
+	mise exec -- pnpm --filter @strain/redteam start -- --mode browser
+
+redteam-check: | require-mise
+	mise exec -- pnpm --filter @strain/redteam start -- --mode browser --check
+
+redteam-rehearsal: | require-mise
+	mise exec -- pnpm --filter @strain/redteam start -- --mode rehearsal
 
 require-mise:
 	@command -v mise >/dev/null 2>&1 || { \

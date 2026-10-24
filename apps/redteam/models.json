@@ -1,0 +1,25 @@
+{
+  "$schema": "https://pi.dev/schemas/models.schema.json",
+  "providers": {
+    "abliteration": {
+      "name": "Abliteration",
+      "baseUrl": "https://api.abliteration.ai/v1",
+      "api": "openai-completions",
+      "apiKey": "$ABLITERATION_API_KEY",
+      "models": [
+        {
+          "id": "abliterated-model-large-flash",
+          "name": "Abliterated Large Flash",
+          "reasoning": false,
+          "input": ["text"],
+          "contextWindow": 100000,
+          "maxTokens": 4096,
+          "samplingParams": {
+            "thinking": false,
+            "include_reasoning": false
+          }
+        }
+      ]
+    }
+  }
+}

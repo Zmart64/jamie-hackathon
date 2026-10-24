@@ -1,6 +1,10 @@
 packages:
   - apps/*
   - packages/*
+allowBuilds:
+  "@google/genai": false
+  esbuild: true
+  protobufjs: false
 patchedDependencies:
   "@reduxjs/toolkit@2.13.0": patches/@reduxjs__toolkit.patch
   "@xyflow/system@0.0.82": patches/@xyflow__system@0.0.82.patch
