@@ -20,10 +20,10 @@ the app entry point for these paths (Vite handles this during development).
 The sidebar uses the standard non-collapsing API, with a compact, always-visible
 icon rail below 768px. Company and page headers share a height and border baseline.
 The account footer uses a local placeholder picture and a shadcn dropdown with
-Account and Log out. These entries intentionally perform no action;
-selecting one only dismisses the menu. The header shows the current page title
-and a sun/moon button that switches between light and dark mode. The shadcn Vite
-theme provider saves that choice in local storage, restores it on load and
+Account, a theme switch and Log out. Account and Log out intentionally perform no action;
+selecting one only dismisses the menu. The header shows the current page title.
+The account menu's Dark mode / Light mode entry switches the theme. The shadcn
+Vite theme provider saves that choice in local storage, restores it on load and
 defaults to light; without storage the switch still works for the session.
 
 The Company sidebar group sits at the bottom, above the account footer, and

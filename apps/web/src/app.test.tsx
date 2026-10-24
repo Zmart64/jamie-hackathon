@@ -131,7 +131,7 @@ describe("app layout", () => {
       within(menu)
         .getAllByRole("menuitem")
         .map((item) => item.textContent),
-    ).toEqual(["Account", "Log out"]);
+    ).toEqual(["Account", "Dark mode", "Log out"]);
     expect(within(menu).getAllByRole("separator")).toHaveLength(2);
     await user.keyboard("{Escape}");
     for (const name of ["Account", "Log out"]) {

@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { AppLink } from "@/components/app-link";
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -40,10 +39,7 @@ export function SiteHeader({
       ) : (
         <h1 className="text-lg font-semibold">{title}</h1>
       )}
-      <div className="ml-auto flex shrink-0 items-center gap-2">
-        <ThemeToggle />
-        {action}
-      </div>
+      {action && <div className="ml-auto shrink-0">{action}</div>}
     </header>
   );
 }
