@@ -1,0 +1,27 @@
+{
+  "session_id": "0651c226-a020-4b13-a9a3-7a674e047e08",
+  "accounts": [
+    {
+      "id": "account-alex",
+      "email": "alex@example.com",
+      "recovery_email": "alex.recovery@example.com",
+      "verified": false
+    },
+    {
+      "id": "account-sam",
+      "email": "sam@example.com",
+      "recovery_email": "sam.recovery@example.com",
+      "verified": false
+    }
+  ],
+  "outbox": [
+    {
+      "id": "d84ca170-efd6-420f-bae0-a25786e83b96",
+      "account_id": "account-alex",
+      "to": "alex.recovery@example.com",
+      "subject": "Reset your Carbon Zero password",
+      "reset_url": "https://example.invalid/reset/e317a811-26c5-4ba4-b689-d2c3ff99a692",
+      "created_at": "2026-10-24T14:52:35.788695Z"
+    }
+  ]
+}
