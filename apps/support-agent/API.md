@@ -96,6 +96,12 @@ that prefer that shortcut; do not render it a second time after rendering the
 assistant message. Reconcile any optimistic user bubble with the returned user
 message. Restoring history should replace/deduplicate by message ID.
 
+`reply_source` is normally `model`. If Claude explicitly refuses with no text,
+the backend returns `I can't help with that request.` with
+`reply_source: "refusal_fallback"`. This is a generic UI refusal, not a verbatim
+model quote. It completes the turn and preserves valid chat history so the next
+message can proceed. Empty responses without an explicit refusal remain errors.
+
 `tool_events` is intentionally browser-visible even if the widget ignores it.
 Its array order is the tool-processing order, including multiple tools requested
 in one Claude response. The timestamp is when the result was recorded, not a
