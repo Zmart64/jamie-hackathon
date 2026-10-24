@@ -42,3 +42,11 @@ The event brings together engineers, founders, and other builders for a day of
 prototyping, followed by live demos and awards.
 
 See the [event page](https://luma.com/jamie-hack) for the schedule and venue details.
+
+## Local backends
+
+Run `make setup` once. Start the [customer-support agent](apps/support-agent/README.md)
+with `make support-agent` (port 8000), and the
+[black-box attacker](apps/attacker-agent/README.md) with `make attacker-agent` (port 8001).
+Each service has its own ignored `.env` file and API key. The attack UI can use
+the attacker's [run and event contract](apps/attacker-agent/API.md).

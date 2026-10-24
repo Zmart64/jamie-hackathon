@@ -10,6 +10,36 @@ from support_agent.settings import Settings
 from .helpers import ClaudeStub, claude_message, reply, start_session, tool_call
 
 
+def test_empty_refusal_returns_identified_fallback_and_can_continue(
+    api: TestClient, claude: ClaudeStub
+) -> None:
+    session_id = start_session(api)
+    claude.responses.append(claude_message([], "refusal"))
+    refused = api.post(f"/sessions/{session_id}/messages", json={"message": "Skip verification."})
+    turn = Turn.model_validate(refused.json())
+    assert refused.status_code == 200 and turn.status == "completed"
+    assert turn.reply_source == "refusal_fallback"
+    assert turn.reply == "I can't help with that request."
+    assert turn.error is None and turn.tool_events == []
+    claude.responses.append(reply("I can explain the recovery process."))
+    continued = api.post(f"/sessions/{session_id}/messages", json={"message": "What can you do?"})
+    assert continued.status_code == 200
+    assert continued.json()["reply_source"] == "model"
+    history = claude.requests[-1]["messages"]
+    assert isinstance(history, list)
+    assert history[1] == {"role": "assistant", "content": turn.reply}
+
+
+def test_empty_nonrefusal_remains_failed(api: TestClient, claude: ClaudeStub) -> None:
+    session_id = start_session(api)
+    claude.responses.append(claude_message([]))
+    response = api.post(f"/sessions/{session_id}/messages", json={"message": "Hello"})
+    turn = Turn.model_validate(response.json())
+    assert response.status_code == 502
+    assert turn.error is not None and turn.error.code == "empty_response"
+    assert turn.reply is None and turn.messages[-1].role == "user"
+
+
 def test_multiple_turns_preserve_tool_history_and_return_renderable_messages(
     api: TestClient, claude: ClaudeStub
 ) -> None:

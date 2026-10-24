@@ -8,13 +8,14 @@ package = false
 required-version = ">=0.13.1,<0.14"
 
 [tool.uv.workspace]
-members = ["apps/support-agent"]
+members = ["apps/support-agent", "apps/attacker-agent"]
 
 [tool.uv.sources]
 support-agent = { workspace = true }
+attacker-agent = { workspace = true }
 
 [dependency-groups]
-dev = ["ruff", "pytest", "httpx==0.28.1", "httpx2==2.13.1", "support-agent"]
+dev = ["ruff", "pytest", "httpx==0.28.1", "httpx2==2.13.1", "support-agent", "attacker-agent"]
 
 [tool.ruff]
 target-version = "py313"
