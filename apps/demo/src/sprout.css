@@ -41,7 +41,7 @@
   display: none;
 }
 .helper-launcher:active .sprout {
-  scale: 1.07 0.91;
+  scale: 0.97;
 }
 @keyframes sprout-arrive {
   0% {

@@ -26,7 +26,7 @@ describe("Carbon Zero demo", () => {
       "false",
     );
     expect(screen.queryByRole("region", { name: "Sprout" })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Open Sprout" }));
+    await user.click(screen.getByText("Need help?"));
     expect(screen.getByRole("region", { name: "Sprout" })).toBeVisible();
     expect(
       await within(screen.getByRole("log")).findByText(
