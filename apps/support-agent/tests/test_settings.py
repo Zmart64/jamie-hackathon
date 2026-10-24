@@ -48,7 +48,7 @@ def test_custom_config_resolves_assets_relative_to_its_location(
     assert loaded.agent.system_prompt == tmp_path / "custom.md"
     assert loaded.agent.accounts_file == tmp_path / "accounts.json"
     assert loaded.agent.model == "custom-model"
-    assert create_app(loaded).title == "ExampleApp Support Agent"
+    assert create_app(loaded).title == "Carbon Zero Support Agent"
 
 
 def test_configuration_typos_fail_early(settings: Settings) -> None:

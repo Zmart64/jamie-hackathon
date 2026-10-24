@@ -1,53 +1,111 @@
 import { useEffect, useRef, useState, type RefObject, type SubmitEvent } from "react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Sparkles, SquarePen } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import type { SproutMood } from "./sprout";
 import { useSupportChat } from "../hooks/use-support-chat";
 import { ChatSprout } from "./chat-sprout";
+import type { HelpTopic } from "./login-helper";
 
-const introduction = [
-  "Hi, I’m Sprout, your login agent.",
-  "A little help getting in? It looks like you can’t log in.",
-] as const;
+const hello = "Hi, I’m Sprout, your Carbon Zero agent.";
+const greetings: Record<HelpTopic, string> = {
+  welcome: "Ask me anything, or pick a question below.",
+  offer: "A little help getting in? It looks like you can’t log in.",
+  password: "Forgot your password? I can help you reset it.",
+  email: "Forgot your account email? Let’s help you find your account.",
+};
+const commonQuestions = [
+  { label: "What can you help with?", message: "What can you help me with?" },
+  { label: "Reset my password", message: "How do I reset my Carbon Zero password?" },
+];
 const thinkingDuration = 640;
 const initialPause = 320;
-const firstLength = introduction[0].length;
+const firstLength = hello.length;
 const firstDuration = Math.ceil(firstLength / 2) * 32;
-const totalLength = introduction.join("").length;
 
 interface SupportChatProps {
   active: boolean;
+  topic: HelpTopic;
+  openRequest: number;
+}
+
+function useWelcome(topic: HelpTopic, openRequest: number, hasMessages: boolean) {
+  const [elapsed, setElapsed] = useState(0);
+  const [previousContext, setPreviousContext] = useState({ topic, openRequest });
+  const [greetingTopic, setGreetingTopic] = useState(topic);
+  if (topic !== previousContext.topic || openRequest !== previousContext.openRequest) {
+    setPreviousContext({ topic, openRequest });
+    // Help actions can change an empty greeting, but never rewrite a conversation.
+    if (!hasMessages) {
+      setGreetingTopic(topic);
+      setElapsed(0);
+    }
+  }
+  return { elapsed, setElapsed, greetingTopic, setGreetingTopic };
+}
+
+function ChatSuggestions({
+  topic,
+  streaming,
+  chat,
+  onSelect,
+}: {
+  topic: HelpTopic;
+  streaming: boolean;
+  chat: ReturnType<typeof useSupportChat>;
+  onSelect: (message: string) => void;
+}) {
+  if (streaming || chat.messages.length > 0 || chat.pending || chat.error || chat.draft.trim()) {
+    return null;
+  }
+  const questions = [
+    ...commonQuestions,
+    topic === "welcome"
+      ? { label: "What’s a carbon footprint?", message: "What is a carbon footprint?" }
+      : { label: "Find my account", message: "I forgot which email I used for my account." },
+  ];
+  return (
+    <div className="chat-suggestions" role="group" aria-label="Suggested questions">
+      {questions.map(({ label, message }) => (
+        <Button key={label} variant="outline" size="sm" onClick={() => onSelect(message)}>
+          {label}
+          <ArrowUpRight aria-hidden="true" />
+        </Button>
+      ))}
+    </div>
+  );
 }
 
 function IntroBubble({
   text,
   complete,
   latest,
-  mood,
   anchorRef,
 }: {
   text: string;
   complete: boolean;
   latest: boolean;
-  mood: SproutMood;
   anchorRef: RefObject<HTMLDivElement | null> | null;
 }) {
   return (
-    <div ref={anchorRef} className="chat-agent-row" aria-busy={!complete}>
+    <div ref={anchorRef} className="chat-agent-row" aria-busy={!complete && Boolean(text)}>
       <span className="chat-avatar-slot" aria-hidden="true" />
       <div className="chat-agent-content">
-        <div className="chat-message chat-message-assistant">
-          <p>
-            {text || "Thinking…"}
-            <span className="chat-stream-caret" hidden={complete || !text} aria-hidden="true" />
+        {text ? (
+          <>
+            <div className="chat-message chat-message-assistant">
+              <p>
+                {text}
+                <span className="chat-stream-caret" hidden={complete} aria-hidden="true" />
+              </p>
+            </div>
+            {latest && <span className="chat-agent-name">Sprout</span>}
+          </>
+        ) : (
+          <p className="chat-thinking" role="status">
+            Thinking…
           </p>
-        </div>
-        {latest && (
-          <span className="chat-agent-name" role={mood === "thinking" ? "status" : undefined}>
-            {mood === "thinking" ? "Sprout is thinking…" : "Sprout"}
-          </span>
         )}
       </div>
     </div>
@@ -95,11 +153,12 @@ function ChatRecovery({
       {(messages.length > 0 || chat.error) && (
         <Button
           className="chat-restart"
-          variant="link"
+          variant="ghost"
           size="sm"
           disabled={pending}
           onClick={onRestart}
         >
+          <SquarePen aria-hidden="true" />
           Start new conversation
         </Button>
       )}
@@ -107,10 +166,16 @@ function ChatRecovery({
   );
 }
 
-export function SupportChat({ active }: SupportChatProps) {
-  const [elapsed, setElapsed] = useState(0);
+export function SupportChat({ active, topic, openRequest }: SupportChatProps) {
   const chat = useSupportChat();
   const { messages, draft, setDraft, pending } = chat;
+  const { elapsed, setElapsed, greetingTopic, setGreetingTopic } = useWelcome(
+    topic,
+    openRequest,
+    messages.length > 0,
+  );
+  const introduction = [hello, greetings[greetingTopic]];
+  const totalLength = firstLength + greetings[greetingTopic].length;
   const [activity, setActivity] = useState(0);
   const [sleepingAfter, setSleepingAfter] = useState<number | null>(null);
   const latestMessageRef = useRef<HTMLDivElement>(null);
@@ -121,7 +186,8 @@ export function SupportChat({ active }: SupportChatProps) {
     Math.floor(Math.max(0, elapsed - initialPause) / 32) * 2,
   );
   const secondElapsed = Math.max(0, elapsed - initialPause - firstDuration - thinkingDuration);
-  const shown = firstShown + Math.min(introduction[1].length, Math.floor(secondElapsed / 32) * 2);
+  const shown =
+    firstShown + Math.min(greetings[greetingTopic].length, Math.floor(secondElapsed / 32) * 2);
   const streaming = shown < totalLength && messages.length === 0;
   const latestIndex = shown > firstLength ? 1 : 0;
   const betweenMessages = shown === 0 || shown === firstLength;
@@ -149,18 +215,22 @@ export function SupportChat({ active }: SupportChatProps) {
     if (!active || !streaming) return;
     const timer = window.setInterval(() => setElapsed((current) => current + 32), 32);
     return () => window.clearInterval(timer);
-  }, [active, streaming]);
+  }, [active, streaming, setElapsed]);
 
   useEffect(() => {
     const history = historyRef.current;
     if (active && history) history.scrollTop = history.scrollHeight;
   }, [messages, shown, active, pending, chat.error]);
 
+  function submitMessage(text: string) {
+    if (text.trim() && !locked) setElapsed(5000);
+    void chat.send(text);
+    inputRef.current?.focus();
+  }
+
   function sendMessage(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (draft.trim() && !locked) setElapsed(5000);
-    void chat.send();
-    inputRef.current?.focus();
+    submitMessage(draft);
   }
 
   return (
@@ -183,7 +253,6 @@ export function SupportChat({ active }: SupportChatProps) {
                 text={text.slice(0, visible)}
                 complete={visible >= text.length}
                 latest={!hasReply && !pending && index === latestIndex}
-                mood={mood}
                 anchorRef={!hasReply && !pending && index === latestIndex ? latestMessageRef : null}
               />
             ) : null;
@@ -195,7 +264,6 @@ export function SupportChat({ active }: SupportChatProps) {
                 text={message.content}
                 complete
                 latest={!pending && index === latestAssistant}
-                mood={mood}
                 anchorRef={!pending && index === latestAssistant ? latestMessageRef : null}
               />
             ) : (
@@ -205,15 +273,13 @@ export function SupportChat({ active }: SupportChatProps) {
               </div>
             ),
           )}
-          {pending && (
-            <IntroBubble
-              text=""
-              complete={false}
-              latest
-              mood="thinking"
-              anchorRef={latestMessageRef}
-            />
-          )}
+          {pending && <IntroBubble text="" complete={false} latest anchorRef={latestMessageRef} />}
+          <ChatSuggestions
+            topic={greetingTopic}
+            streaming={streaming}
+            chat={chat}
+            onSelect={submitMessage}
+          />
           <ChatSprout
             anchorRef={latestMessageRef}
             messageIndex={latestIndex + messages.length * 2 + Number(pending)}
@@ -226,6 +292,8 @@ export function SupportChat({ active }: SupportChatProps) {
         chat={chat}
         onRestart={() => {
           chat.restart();
+          setGreetingTopic("welcome");
+          setElapsed(5000);
           inputRef.current?.focus();
         }}
       />
@@ -236,6 +304,7 @@ export function SupportChat({ active }: SupportChatProps) {
         <Input
           ref={inputRef}
           id="sprout-message"
+          aria-describedby="sprout-ai-disclosure"
           placeholder="Type your message…"
           value={draft}
           maxLength={2000}
@@ -260,7 +329,13 @@ export function SupportChat({ active }: SupportChatProps) {
           </Button>
         )}
       </form>
-      <p className="chat-demo-note">Demo recovery · No real emails are sent.</p>
+      <span
+        id="sprout-ai-disclosure"
+        className="mt-1 flex shrink-0 items-center justify-end gap-1.5 text-[11px] leading-4 text-foreground/75"
+      >
+        <Sparkles className="size-3 shrink-0" aria-hidden="true" />
+        AI support assistant
+      </span>
     </div>
   );
 }

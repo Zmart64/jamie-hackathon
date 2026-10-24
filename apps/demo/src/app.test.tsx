@@ -31,11 +31,13 @@ describe("Carbon Zero demo", () => {
     expect(screen.getByRole("region", { name: "Sprout" })).toBeVisible();
     expect(
       await within(screen.getByRole("log")).findByText(
-        "A little help getting in? It looks like you can’t log in.",
+        "Ask me anything, or pick a question below.",
         {},
         { timeout: 3000 },
       ),
     ).toBeVisible();
+    expect(screen.queryByText(/It looks like you can’t log in/)).not.toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Suggested questions" })).toBeVisible();
     expect(
       screen.queryByRole("heading", { name: /A little help getting in/ }),
     ).not.toBeInTheDocument();
@@ -106,6 +108,13 @@ describe("Carbon Zero demo", () => {
     await enterEmail(user);
     for (const password of ["anything", "a completely different password"]) {
       await failLogin(user, password);
+      expect(
+        await screen.findByText(
+          "A little help getting in? It looks like you can’t log in.",
+          {},
+          { timeout: 3000 },
+        ),
+      ).toBeVisible();
       expect(screen.getByLabelText("Password", { exact: true })).toHaveValue("");
       expect(screen.queryByRole("button", { name: "Log in" })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Show password" })).not.toBeInTheDocument();
@@ -114,7 +123,8 @@ describe("Carbon Zero demo", () => {
       expect(screen.queryByRole("region", { name: "Sprout" })).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Open Sprout" })).toHaveFocus();
     }
-  });
+    // Two rejected logins each include the delay and a full streamed greeting.
+  }, 10_000);
 
   it("preserves the conversation through help actions and sends only chat text without storage writes", async () => {
     const user = userEvent.setup();
@@ -129,8 +139,10 @@ describe("Carbon Zero demo", () => {
       await enterEmail(user);
       await failLogin(user);
       const composer = screen.getByRole("textbox", { name: "Message Sprout" });
-      expect(composer).toHaveFocus();
-      expect(await screen.findByText("Hi, I’m Sprout, your login agent.")).toBeVisible();
+      await waitFor(() => expect(composer).toHaveFocus());
+      expect(
+        await screen.findByText("Hi, I’m Sprout, your Carbon Zero agent.", {}, { timeout: 3000 }),
+      ).toBeVisible();
       expect(fetchSpy).not.toHaveBeenCalled();
       await user.type(composer, "demo@carbonzero.example");
       await user.keyboard("{Enter}");
@@ -168,11 +180,15 @@ describe("Carbon Zero demo", () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Forgot email?" }));
-    expect(await screen.findByText("Hi, I’m Sprout, your login agent.")).toBeVisible();
+    expect(
+      await screen.findByText("Hi, I’m Sprout, your Carbon Zero agent.", {}, { timeout: 3000 }),
+    ).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Dismiss helper" }));
     await enterEmail(user);
     await user.click(screen.getByRole("button", { name: "Forgot password?" }));
-    expect(await screen.findByText("Hi, I’m Sprout, your login agent.")).toBeVisible();
+    expect(
+      await screen.findByText("Hi, I’m Sprout, your Carbon Zero agent.", {}, { timeout: 3000 }),
+    ).toBeVisible();
     await user.click(screen.getByRole("button", { name: /Change email address/ }));
     expect(screen.queryByRole("region", { name: "Sprout" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open Sprout" })).toBeVisible();

@@ -24,7 +24,14 @@ describe("Support connection recovery", () => {
       }),
     );
     const { user, composer } = await openAndSend();
-    expect(screen.getByRole("status")).toHaveTextContent("Sprout is thinking");
+    const thinking = screen.getByRole("status");
+    expect(thinking).toHaveTextContent("Thinking…");
+    expect(thinking.closest('[aria-busy="true"]')).toBeNull();
+    expect(screen.getAllByText("Thinking…")).toHaveLength(1);
+    expect(thinking.closest(".chat-message")).toBeNull();
+    expect(thinking.closest(".chat-agent-row")?.querySelector(".chat-message")).toBeNull();
+    expect(thinking.closest(".chat-agent-row")?.querySelector(".chat-agent-name")).toBeNull();
+    expect(screen.getByRole("button", { name: "Start new conversation" })).toBeDisabled();
     expect(composer).toHaveAttribute("readonly");
     await user.keyboard("{Enter}{Enter}{Escape}");
     await act(async () => {
@@ -33,6 +40,8 @@ describe("Support connection recovery", () => {
     });
     await user.click(screen.getByRole("button", { name: "Open Sprout" }));
     expect(screen.getByText("How can I help?")).toBeVisible();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByText("Sprout")).toBeVisible();
     expect(screen.getAllByText("I need help")).toHaveLength(1);
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(composer).not.toHaveAttribute("readonly");
@@ -107,7 +116,7 @@ describe("Support connection recovery", () => {
     await openAndSend();
     expect(await screen.findByRole("alert")).toHaveTextContent("temporarily unavailable");
     expect(screen.queryByText(/ANTHROPIC_API_KEY/)).not.toBeInTheDocument();
-    expect(screen.getByText("Demo recovery · No real emails are sent.")).toBeVisible();
+    expect(screen.queryByText(/Demo recovery/)).not.toBeInTheDocument();
   });
 
   it("checks history after a lost reply and handles a busy session without resubmitting", async () => {
@@ -142,7 +151,10 @@ describe("Support connection recovery", () => {
     const { user, composer } = await openAndSend();
     expect(await screen.findByRole("alert")).toHaveTextContent("conversation has expired");
     expect(composer).toHaveAttribute("readonly");
-    await user.click(screen.getByRole("button", { name: "Start new conversation" }));
+    const restart = screen.getByRole("button", { name: "Start new conversation" });
+    expect(restart.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    restart.focus();
+    await user.keyboard("{Enter}");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(composer).toHaveValue("");
     expect(composer).toHaveFocus();
