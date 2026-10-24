@@ -31,6 +31,9 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-severity-high: hsl(var(--severity-high));
+  --color-severity-medium: hsl(var(--severity-medium));
+  --color-severity-low: hsl(var(--severity-low));
   --color-chart-1: hsl(var(--chart-1));
   --color-chart-2: hsl(var(--chart-2));
   --color-chart-3: hsl(var(--chart-3));

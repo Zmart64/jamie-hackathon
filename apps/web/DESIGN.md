@@ -54,19 +54,29 @@ example's layout and shadcn component styling, with these integration changes:
 
 ## Brand system
 
-The selected identity is Evolve with cobalt/Zinc colors, IBM Plex Sans for the UI
-and wordmark, and IBM Plex Mono for code and trace identifiers. `src/brand.css`
-owns the light/dark semantic colors and locally hosted font declarations;
-`src/styles.css` imports it and maps tokens to Tailwind utilities. Use these roles
-instead of adding component-specific colors. The wordmark uses IBM Plex Sans Bold
-outlines with cobalt AI letters. The compact AI icon appears in the mobile rail.
+The selected identity is the skewed Point S mark in Bone & Ink (`#EDE8DC` and
+`#0B0B0F`) with a photoelastic core, IBM Plex Sans for the UI and wordmark, and
+IBM Plex Mono for code and trace identifiers. `src/brand.css` owns the light/dark
+semantic colors and locally hosted font declarations; `src/styles.css` imports it
+and maps tokens to Tailwind utilities. Use these roles instead of adding
+component-specific colors.
 
-Production SVGs are in `public/brand`, and font files and their OFL licenses are
-in `public/fonts`. The favicon, Apple touch icon, and web manifest use the same
-monogram. The manifest supplies home-screen metadata, not offline functionality.
+Light mode is white (page and sidebar) with ink text and actions and one family
+of cool neutral greys for muted surfaces, the selected/hover state, borders and
+muted text. Dark mode is ink with bone text. Severity is the only saturated color
+in the interface: High shows three red bars, Medium two tangerine bars and Low one
+ochre bar, always with the level as a word.
+
+The lockup pairs the mark with solid one-color IBM Plex Sans Bold outlines. The
+bright photoelastic gradient appears only on the mark's core slab: in the sidebar
+lockup, the mobile-rail icon and the app icons. Browser favicons stay flat.
+Production SVGs, PNGs and the ICO in `public/brand` come from
+`scripts/generate_brand_assets.py`; do not edit them by hand. Font files and their
+OFL licenses are in `public/fonts`. The manifest supplies home-screen metadata,
+not offline functionality.
 Button and badge variants use paired destructive foreground tokens in both
 themes; primary hover uses its dedicated token. See `../../brand/README.md` for
-asset use, typography, source details, and the complete downloadable kit.
+asset use, the brand story, typography and source details.
 
 Standard strict type, lint, source-size and formatting checks cover all UI source.
 No vendor error baseline, `skipLibCheck`, or UI exclusions are used.

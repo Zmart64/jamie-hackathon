@@ -1,17 +1,47 @@
 {
   "name": "Strain",
-  "direction": "Evolve",
+  "direction": "Point S, skewed, photoelastic core",
   "date": "2026-10-24",
   "font": "IBM Plex Sans",
   "wordmarkWeight": 700,
   "unitsPerEm": 1000,
   "trackingInFontUnits": -24,
   "wordmarkViewBox": [0, 0, 3536, 770],
-  "primary": "#2563EB",
-  "primaryDark": "#93C5FD",
-  "neutral": "#18181B",
+  "primary": "#0B0B0F",
+  "primaryDark": "#EDE8DC",
+  "neutral": "#0B0B0F",
   "clearSpaceCapHeightRatio": 0.5,
   "minimumWordmarkWidthPx": 120,
   "minimumIconWidthPx": 24,
-  "faviconExceptionPx": 16
+  "faviconExceptionPx": 16,
+  "bone": "#EDE8DC",
+  "ink": "#0B0B0F",
+  "markSkewDegrees": 14,
+  "severity": {
+    "light": {
+      "High": "#C42B1F",
+      "Medium": "#C9561A",
+      "Low": "#A06B2E"
+    },
+    "dark": {
+      "High": "#F26B5E",
+      "Medium": "#F0914A",
+      "Low": "#CFA36E"
+    },
+    "bars": {
+      "High": 3,
+      "Medium": 2,
+      "Low": 1
+    }
+  },
+  "photoelastic": ["#7C6CFF", "#3FD0E0", "#E9F46A", "#FF8FB1", "#9B7BFF"],
+  "photoelasticOffsets": [0, 0.3, 0.55, 0.8, 1],
+  "generator": "../scripts/generate_brand_assets.py",
+  "lightSurfaces": {
+    "page": "#FFFFFF",
+    "sidebar": "#FFFFFF",
+    "muted": "#F4F4F6",
+    "selected": "#EEEEF1",
+    "border": "#E6E6EA"
+  }
 }

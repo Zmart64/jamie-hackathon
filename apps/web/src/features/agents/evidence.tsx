@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Agent, Assessment, Finding } from "./model";
 import type { Selection } from "./canvas";
 import { DemoEvidence } from "./demo-evidence";
+import { SeverityLabel } from "./severity";
 
 export function EvidencePanel({
   agent,
@@ -86,9 +87,7 @@ function FindingEvidence({
     <>
       <div>
         <div className="mb-3 flex flex-wrap gap-2">
-          <Badge variant={finding.severity === "High" ? "destructive" : "secondary"}>
-            {finding.severity}
-          </Badge>
+          <SeverityLabel severity={finding.severity} className="mr-1" />
           <Badge variant="outline">
             <CheckCircle2 className="size-3" aria-hidden="true" />
             Confirmed

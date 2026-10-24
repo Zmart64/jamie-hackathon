@@ -5,10 +5,12 @@ export type AgentConfig = {
   connection: Connection;
   address: string;
 };
+export const severities = ["High", "Medium", "Low"] as const;
+export type Severity = (typeof severities)[number];
 export type Finding = {
   id: string;
   title: string;
-  severity: "High" | "Medium";
+  severity: Severity;
   scenario:
     | "Prompt injection"
     | "Data disclosure"
