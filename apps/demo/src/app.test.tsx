@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { json, mockSupport, turn } from "./lib/support-test-fixtures";
 import { App } from "./app";
 
 async function enterEmail(user: ReturnType<typeof userEvent.setup>) {
@@ -115,9 +116,13 @@ describe("Carbon Zero demo", () => {
     }
   });
 
-  it("preserves user messages when minimized without network or storage writes", async () => {
+  it("preserves the conversation through help actions and sends only chat text without storage writes", async () => {
     const user = userEvent.setup();
-    const fetchSpy = vi.spyOn(window, "fetch");
+    const fetchSpy = mockSupport();
+    fetchSpy.mockResolvedValueOnce(json(turn("demo@carbonzero.example")));
+    fetchSpy.mockResolvedValueOnce(
+      json(turn("It says my password is incorrect", "Let’s help you recover access.", "2")),
+    );
     const storageSpy = vi.spyOn(Storage.prototype, "setItem");
     try {
       render(<App />);
@@ -126,10 +131,13 @@ describe("Carbon Zero demo", () => {
       const composer = screen.getByRole("textbox", { name: "Message Sprout" });
       expect(composer).toHaveFocus();
       expect(await screen.findByText("Hi, I’m Sprout, your login agent.")).toBeVisible();
+      expect(fetchSpy).not.toHaveBeenCalled();
       await user.type(composer, "demo@carbonzero.example");
       await user.keyboard("{Enter}");
+      expect(await screen.findByText("How can I help?")).toBeVisible();
       await user.type(composer, "It says my password is incorrect");
       await user.click(screen.getByRole("button", { name: "Send message" }));
+      expect(await screen.findByText("Let’s help you recover access.")).toBeVisible();
       expect(screen.getByText("It says my password is incorrect")).toBeVisible();
       expect(screen.queryByText(/Check that Caps Lock is off/)).not.toBeInTheDocument();
       expect(within(screen.getByRole("log")).getByText("demo@carbonzero.example")).toBeVisible();
@@ -141,10 +149,17 @@ describe("Carbon Zero demo", () => {
       await user.keyboard("{Enter}");
       expect(screen.getByText("It says my password is incorrect")).toBeVisible();
       expect(screen.queryByRole("button", { name: "Send a reset link" })).not.toBeInTheDocument();
-      expect(fetchSpy).not.toHaveBeenCalled();
+      await user.click(screen.getByRole("button", { name: "Forgot password?" }));
+      expect(screen.getByText("Let’s help you recover access.")).toBeVisible();
+      expect(fetchSpy).toHaveBeenCalledTimes(3);
+      expect(fetchSpy.mock.calls.map(([, options]) => options?.body)).toEqual([
+        "{}",
+        JSON.stringify({ message: "demo@carbonzero.example" }),
+        JSON.stringify({ message: "It says my password is incorrect" }),
+      ]);
       expect(storageSpy).not.toHaveBeenCalled();
     } finally {
-      fetchSpy.mockRestore();
+      vi.unstubAllGlobals();
       storageSpy.mockRestore();
     }
   });
