@@ -1,0 +1,15 @@
+.venv/
+.tools/
+node_modules/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+dist/
+build/
+.DS_Store
+.env
+.env.*
+!.env.example

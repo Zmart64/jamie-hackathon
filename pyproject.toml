@@ -1,0 +1,38 @@
+[project]
+name = "strain"
+version = "0.0.0"
+requires-python = ">=3.13,<3.14"
+
+[tool.uv]
+package = false
+required-version = ">=0.13.1,<0.14"
+
+[dependency-groups]
+dev = ["ruff", "pytest"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM", "C4", "C901", "PLR0915", "PGH003", "PGH004", "RUF100"]
+# Public return types, dynamic code execution, unsafe YAML, and shell=True.
+# Keep inferred private return types and intentional Any at library boundaries.
+extend-select = ["ANN201", "ANN204", "S102", "S307", "S506", "S602"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-statements = 50
+
+[tool.pyright]
+include = ["**/*.py", "**/*.pyi"]
+exclude = ["**/node_modules", "**/.venv", "**/dist", "**/build"]
+typeCheckingMode = "strict"
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"

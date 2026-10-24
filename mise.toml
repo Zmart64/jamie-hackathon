@@ -1,0 +1,6 @@
+# Keep Node and pnpm aligned with .node-version and package.json; tests verify this.
+# uv manages Python using .python-version and the project's .venv.
+[tools]
+node = "24.22.0"
+pnpm = "11.25.0"
+uv = "0.13.1"

@@ -1,0 +1,5 @@
+packages:
+  - apps/*
+  - packages/*
+patchedDependencies:
+  "@reduxjs/toolkit@2.13.0": patches/@reduxjs__toolkit.patch

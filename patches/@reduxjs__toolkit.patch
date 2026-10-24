@@ -1,0 +1,44 @@
+diff --git a/dist/index.d.mts b/dist/index.d.mts
+index e65ed1e5ff70a7ff64cec2576e370737b3b629f2..908070fa03f883dafd28721fd23f2f1e37f44159 100644
+--- a/dist/index.d.mts
++++ b/dist/index.d.mts
+@@ -794,7 +794,7 @@ interface SerializedError {
+   name?: string;
+   message?: string;
+   stack?: string;
+-  code?: string;
++  code?: string | undefined;
+ }
+ declare class RejectWithValue<Payload, RejectedMeta> {
+   readonly payload: Payload;
+@@ -972,7 +972,7 @@ type AsyncThunk<Returned, ThunkArg, ThunkApiConfig extends AsyncThunkConfig> = A
+   settled: (action: any) => action is ReturnType<AsyncThunkRejectedActionCreator<ThunkArg, ThunkApiConfig> | AsyncThunkFulfilledActionCreator<Returned, ThunkArg, ThunkApiConfig>>;
+   typePrefix: string;
+ };
+-type OverrideThunkApiConfigs<OldConfig, NewConfig> = Id<NewConfig & Omit<OldConfig, keyof NewConfig>>;
++type OverrideThunkApiConfigs<OldConfig, NewConfig> = NewConfig & Omit<OldConfig, keyof NewConfig>;
+ type CreateAsyncThunkFunction<CurriedThunkApiConfig extends AsyncThunkConfig> = {
+   /**
+    *
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index e65ed1e5ff70a7ff64cec2576e370737b3b629f2..908070fa03f883dafd28721fd23f2f1e37f44159 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -794,7 +794,7 @@ interface SerializedError {
+   name?: string;
+   message?: string;
+   stack?: string;
+-  code?: string;
++  code?: string | undefined;
+ }
+ declare class RejectWithValue<Payload, RejectedMeta> {
+   readonly payload: Payload;
+@@ -972,7 +972,7 @@ type AsyncThunk<Returned, ThunkArg, ThunkApiConfig extends AsyncThunkConfig> = A
+   settled: (action: any) => action is ReturnType<AsyncThunkRejectedActionCreator<ThunkArg, ThunkApiConfig> | AsyncThunkFulfilledActionCreator<Returned, ThunkArg, ThunkApiConfig>>;
+   typePrefix: string;
+ };
+-type OverrideThunkApiConfigs<OldConfig, NewConfig> = Id<NewConfig & Omit<OldConfig, keyof NewConfig>>;
++type OverrideThunkApiConfigs<OldConfig, NewConfig> = NewConfig & Omit<OldConfig, keyof NewConfig>;
+ type CreateAsyncThunkFunction<CurriedThunkApiConfig extends AsyncThunkConfig> = {
+   /**
+    *

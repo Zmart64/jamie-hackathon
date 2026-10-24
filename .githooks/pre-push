@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+# Tests create temporary repositories; inherited Git paths must not redirect them.
+unset $(git rev-parse --local-env-vars)
+echo "Running Strain checks before push..."
+exec make check </dev/null
