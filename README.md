@@ -11,9 +11,7 @@ pressure, and inspect where its boundaries hold or break. Our own agentic
 red-team pipeline uses an attacking agent to probe another agent, adapt its
 approach, and record what happened.
 
-
 ![Strain agent inventory with assessment status and finding severity](docs/screenshots/strain-platform.jpg)
-
 
 ## What the project shows
 
@@ -77,7 +75,7 @@ flowchart LR
 ```
 
 The pipeline uses Playwright MCP to explore target and interact
-with it. The pipeline uses the Pi SDK and an Abliteration-hosted attacker model. 
+with it. The pipeline uses the Pi SDK and an Abliteration-hosted attacker model.
 
 <!-- Add an app-only screenshot of an actual live run here, with its run context. -->
 
@@ -85,14 +83,14 @@ Source and setup: [`apps/redteam`](apps/redteam/README.md)
 
 ## Repository map
 
-| Path                                                   | Role                                                                                                                                |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [`apps/web`](apps/web)                                 | Strain platform: React, TypeScript, Vite, Tailwind, shadcn/ui, and React Flow.                                                      |
-| [`apps/demo`](apps/demo)                               | Carbon Zero login page and Sprout chat interface.                                                                                   |
-| [`apps/support-agent`](apps/support-agent/README.md)   | Python support API, Claude agent, and isolated mock recovery tools.                                                                 |
-| [`apps/redteam`](apps/redteam/README.md)               | Current browser/rehearsal red-team harness using the Pi SDK and Playwright MCP.                                                     |
-| [`brand`](brand/README.md)                             | Current identity, design specifications, fonts, and asset provenance.                                                               |
-| [`scripts`](scripts)                                   | Shared quality checks, security tooling, and brand asset generation.                                                                |
+| Path                                                 | Role                                                                            |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [`apps/web`](apps/web)                               | Strain platform: React, TypeScript, Vite, Tailwind, shadcn/ui, and React Flow.  |
+| [`apps/demo`](apps/demo)                             | Carbon Zero login page and Sprout chat interface.                               |
+| [`apps/support-agent`](apps/support-agent/README.md) | Python support API, Claude agent, and isolated mock recovery tools.             |
+| [`apps/redteam`](apps/redteam/README.md)             | Current browser/rehearsal red-team harness using the Pi SDK and Playwright MCP. |
+| [`brand`](brand/README.md)                           | Current identity, design specifications, fonts, and asset provenance.           |
+| [`scripts`](scripts)                                 | Shared quality checks, security tooling, and brand asset generation.            |
 
 ## Run the webapp
 
@@ -103,6 +101,7 @@ make setup
 ```
 
 Start the platform and demo agent with:
+
 ```sh
 make dev       # Strain platform
 make dev-demo  # Carbon Zero login page
@@ -127,4 +126,3 @@ make redteam
 ```
 
 Results are saved under `apps/redteam/runs/<run-id>/board.md`.
-
