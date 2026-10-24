@@ -1,69 +1,130 @@
-# Jamie Hackathon
+<p align="center">
+  <img src="apps/web/public/brand/app-icon.svg" alt="Strain Point S logo" width="96" height="96" />
+</p>
 
-Our team’s project for the [Agentic AI Hack by Jamie](https://luma.com/jamie-hack)
-in Berlin on **24 October 2026**.
+<h1 align="center">STRAIN</h1>
 
-We’re building our AI agent prototype here, from the first experiments to our
-hackathon demo.
+<p align="center"><strong>Secure your AI agents</strong></p>
 
-## Support agent backend
+STRAIN is an agent security platform: add an AI agent, put it under adversarial
+pressure, and inspect where its boundaries hold or break. Our own agentic
+red-team pipeline uses an attacking agent to probe another agent, adapt its
+approach, and record what happened.
 
-The [support agent](apps/support-agent/README.md) is a Claude-powered chat API with
-mock account recovery tools. It includes configurable model settings, a separate
-English system prompt, isolated demo sessions, and tool traces for the frontend.
-Run `make support-agent` after setup and adding an Anthropic API key; see its README
-for configuration and the frontend contract.
 
-## Local apps
+![Strain agent inventory with assessment status and finding severity](docs/screenshots/strain-platform.jpg)
 
-- `make dev` starts the dashboard in `apps/web` on Vite's default port (5173).
-- `make dev-demo` starts the Carbon Zero login demo in `apps/demo` at
-  <http://127.0.0.1:5174>. Both apps can run at the same time.
-- `make check` runs lint, type checks, tests and production builds for both apps.
 
-The Carbon Zero demo accepts a valid email, then reveals the password field.
-Every nonempty password is rejected after a short simulated wait, and Sprout
-opens a support chat. The forgot links also open Sprout. Two welcome messages
-stream into the chat; subsequent messages are sent to the support agent and display
-its replies. Login-form credentials stay local; only text submitted in the chat is
-transmitted. Account changes and reset emails use the backend’s isolated mock data.
-Conversations stay in memory across help actions and minimizing; refresh or choose
-**Start new conversation** to reset. This app intentionally stays white in light
-and dark OS modes.
-Sprout is always available in the bottom-right corner; opening or closing its
-chat panel does not move the centered login form. Minimizing preserves the
-conversation and unsent draft; changing the login email starts a fresh conversation.
+## What the project shows
 
-To use Sprout, configure `ANTHROPIC_API_KEY` in the backend’s ignored
-`apps/support-agent/.env` file (see its `.env.example`), then run `make support-agent`
-and `make dev-demo` in separate terminals. The demo proxies `/api/support/*` to
-`http://127.0.0.1:8000`, so the browser needs no API key or additional CORS settings.
-Set `SUPPORT_AGENT_URL` in `apps/demo/.env` to use a different backend address.
-For a deployed static build, route `/api/support/*` to the support backend and
-strip the `/api/support` prefix; the Vite proxy is only for local dev/preview.
+An agent can follow its instructions in ordinary conversation and still misuse
+its tools under pressure. Strain explores that gap: can an attacker persuade it
+to disclose data, skip approval, or take an action it should refuse?
 
-Sprout accepts one message at a time and shows a thinking state during each turn.
-If a reply is lost, **Check conversation** fetches server history without replaying
-possible account actions. Failed turns retain their accepted messages and show an
-error; a server restart requires a new conversation. Recovery uses demo accounts
-such as `alex@example.com`; reset emails stay in the mock inbox.
+The platform demonstrates the workflow:
 
-## The hackathon
+1. **Add an agent.** Give it a name and choose a website, API endpoint, or mail
+   connection in the setup form.
+2. **Run an assessment.** Follow the exploration and attack attempts on a visual
+   canvas, with browser traces in the Carbon Zero walkthrough.
+3. **Inspect the evidence.** Review severity, the attack input, the tool action,
+   the observed result, and a suggested fix.
+4. **Reassess.** Review assessment history and retest after addressing a finding.
 
-- **Organizers:** Jamie and {Tech: Europe}
-- **Technology partners:** Reson8 and Anthropic
-- **Challenge:** Build an AI agent in eight hours
-- **Location:** Berlin, Germany
+## The three parts of the demo
 
-The event brings together engineers, founders, and other builders for a day of
-prototyping, followed by live demos and awards.
+### 1. Carbon Zero: the target
 
-See the [event page](https://luma.com/jamie-hack) for the schedule and venue details.
+Carbon Zero is a fictional login page built for the pitch. The user cannot log in, so they turn to **Sprout**, the
+embedded support agent, for help recovering their account.
 
-## Local backends
+![Carbon Zero login page with the Sprout support assistant](docs/screenshots/carbon-zero.jpg)
+Sprout (the support Agent) uses the **Anthropic Claude Agent SDK** with tools for account lookup,
+verification, recovery-address changes, and password resets.
 
-Run `make setup` once. Start the [customer-support agent](apps/support-agent/README.md)
-with `make support-agent` (port 8000), and the
-[black-box attacker](apps/attacker-agent/README.md) with `make attacker-agent` (port 8001).
-Each service has its own ignored `.env` file and API key. The attack UI can use
-the attacker's [run and event contract](apps/attacker-agent/API.md).
+The demo login can be found here: [`apps/demo`](apps/demo), while docs can be found here: [Support agent documentation](apps/support-agent/README.md) and here: [Support API](apps/support-agent/API.md)
+
+### 2. The STRAIN platform
+
+Our platform for adding agents to the pipeline and reviewing their
+security assessments. It includes an agent inventory, assessment canvas,
+findings and evidence views.
+
+Its Carbon Zero walkthrough follows surface discovery, direct verification
+bypass, support impersonation, and recovery manipulation. The canvas brings
+attack paths, browser traces, and findings together so reviewers can follow an
+assessment from the first probe to the recommended fix.
+
+The platform code can be found here:[`apps/web`](apps/web).
+
+### 3. The red teaming agent pipeline
+
+Our evaluation harness gives an attacking agent a goal, a playbook, a knowledge
+board, and tools for interacting with the target. The agent chooses its actions,
+learns from responses, and records successful and unsuccessful techniques.
+
+```mermaid
+flowchart LR
+    Platform[Assessment] --> Goal
+    Goal[Evaluation goal + playbook] --> Agent[Red-team agent]
+    Agent --> Browser[Browser interaction]
+    Browser --> Demo[Target interaction]
+    Demo --> Support[Anthropic Claude Agent SDK]
+    Support --> Feedback[Replies + observable tool receipts]
+    Feedback --> Agent
+    Agent --> Board[Knowledge board + result + evidence]
+    Board --> Findings[Findings + evidence review in Strain]
+```
+
+The pipeline uses Playwright MCP to explore target and interact
+with it. The pipeline uses the Pi SDK and an Abliteration-hosted attacker model. 
+
+<!-- Add an app-only screenshot of an actual live run here, with its run context. -->
+
+Source and setup: [`apps/redteam`](apps/redteam/README.md)
+
+## Repository map
+
+| Path                                                   | Role                                                                                                                                |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| [`apps/web`](apps/web)                                 | Strain platform: React, TypeScript, Vite, Tailwind, shadcn/ui, and React Flow.                                                      |
+| [`apps/demo`](apps/demo)                               | Carbon Zero login page and Sprout chat interface.                                                                                   |
+| [`apps/support-agent`](apps/support-agent/README.md)   | Python support API, Claude agent, and isolated mock recovery tools.                                                                 |
+| [`apps/redteam`](apps/redteam/README.md)               | Current browser/rehearsal red-team harness using the Pi SDK and Playwright MCP.                                                     |
+| [`brand`](brand/README.md)                             | Current identity, design specifications, fonts, and asset provenance.                                                               |
+| [`scripts`](scripts)                                   | Shared quality checks, security tooling, and brand asset generation.                                                                |
+
+## Run the webapp
+
+Install Git, make, and [mise](https://mise.jdx.dev/getting-started.html), then run:
+
+```sh
+make setup
+```
+
+Start the platform and demo agent with:
+```sh
+make dev       # Strain platform
+make dev-demo  # Carbon Zero login page
+```
+
+### Run the pipeline
+
+Create each service's configuration file if it does not already exist:
+
+```sh
+cp apps/support-agent/.env.example apps/support-agent/.env
+cp apps/redteam/.env.example apps/redteam/.env
+```
+
+Set `ANTHROPIC_API_KEY` in the support-agent file and `ABLITERATION_API_KEY` in the
+redteam file.
+With Carbon Zero already running, start each command in its own terminal:
+
+```sh
+make support-agent
+make redteam
+```
+
+Results are saved under `apps/redteam/runs/<run-id>/board.md`.
+
