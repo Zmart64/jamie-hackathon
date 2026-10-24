@@ -1,4 +1,4 @@
-import { CircleUserRound, EllipsisVertical, LogOut, Settings } from "lucide-react";
+import { CircleUserRound, EllipsisVertical, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -12,16 +12,16 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 const user = {
-  name: "Demo user",
-  email: "demo@example.com",
-  avatar: "/avatars/demo.jpg",
+  name: "Justus",
+  email: "justus@carbon-zero.com",
+  avatar: "/avatars/justus.png",
 };
 
 function UserAvatar() {
   return (
     <Avatar className="rounded-lg">
-      <AvatarImage src={user.avatar} alt="Demo user avatar" />
-      <AvatarFallback className="rounded-lg">DU</AvatarFallback>
+      <AvatarImage src={user.avatar} alt={`${user.name}'s avatar`} />
+      <AvatarFallback className="rounded-lg">J</AvatarFallback>
     </Avatar>
   );
 }
@@ -66,10 +66,6 @@ export function NavUser() {
               <DropdownMenuItem>
                 <CircleUserRound aria-hidden="true" />
                 Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings aria-hidden="true" />
-                Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
