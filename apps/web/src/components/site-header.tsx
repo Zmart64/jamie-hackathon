@@ -30,14 +30,14 @@ export function SiteHeader({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem className="min-w-0">
-              <BreadcrumbPage className="truncate" title={agentName}>
+              <BreadcrumbPage className="truncate font-medium" title={agentName}>
                 {agentName}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       ) : (
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <h1 className="text-sm font-medium">{title}</h1>
       )}
       {action && <div className="ml-auto shrink-0">{action}</div>}
     </header>
