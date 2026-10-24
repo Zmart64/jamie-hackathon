@@ -1,20 +1,15 @@
 import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
 
-export function ThemeToggle() {
+// Theme is a set-once preference, so it lives in the account menu.
+export function ThemeMenuItem() {
   const { theme, setTheme } = useTheme();
   const next = theme === "dark" ? "light" : "dark";
-  const label = `Switch to ${next} mode`;
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      aria-label={label}
-      title={label}
-      onClick={() => setTheme(next)}
-    >
-      {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-    </Button>
+    <DropdownMenuItem onSelect={() => setTheme(next)}>
+      {next === "dark" ? <Moon aria-hidden="true" /> : <Sun aria-hidden="true" />}
+      {next === "dark" ? "Dark mode" : "Light mode"}
+    </DropdownMenuItem>
   );
 }

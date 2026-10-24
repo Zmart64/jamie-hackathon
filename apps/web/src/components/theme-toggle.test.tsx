@@ -1,51 +1,49 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { ThemeProvider } from "./theme-provider";
-import { ThemeToggle } from "./theme-toggle";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { App } from "@/app";
 
-function renderToggle() {
-  return render(
-    <ThemeProvider>
-      <ThemeToggle />
-    </ThemeProvider>,
-  );
+async function chooseThemeEntry(name: string) {
+  const user = userEvent.setup();
+  await user.click(await screen.findByRole("button", { name: "Open account menu" }));
+  await user.click(screen.getByRole("menuitem", { name }));
 }
 
+beforeEach(() => window.history.replaceState(null, "", "/agents"));
 afterEach(() => {
   vi.restoreAllMocks();
   localStorage.clear();
   document.documentElement.className = "";
 });
 
-describe("theme toggle", () => {
+describe("theme switch in the account menu", () => {
   it("switches between light and dark and remembers the choice", async () => {
-    const user = userEvent.setup();
-    renderToggle();
+    render(<App />);
     expect(document.documentElement).toHaveClass("light");
-    await user.click(screen.getByRole("button", { name: "Switch to dark mode" }));
+    await chooseThemeEntry("Dark mode");
     expect(document.documentElement).toHaveClass("dark");
     expect(document.documentElement).not.toHaveClass("light");
     expect(localStorage.getItem("theme")).toBe("dark");
-    await user.click(screen.getByRole("button", { name: "Switch to light mode" }));
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    await chooseThemeEntry("Light mode");
     expect(document.documentElement).toHaveClass("light");
     expect(localStorage.getItem("theme")).toBe("light");
   });
 
-  it("starts in the saved theme", () => {
+  it("starts in the saved theme and offers the opposite one", async () => {
     localStorage.setItem("theme", "dark");
-    renderToggle();
+    render(<App />);
     expect(document.documentElement).toHaveClass("dark");
-    expect(screen.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
+    await chooseThemeEntry("Light mode");
+    expect(document.documentElement).toHaveClass("light");
   });
 
   it("still switches for the session when storage is unavailable", async () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("storage disabled");
     });
-    const user = userEvent.setup();
-    renderToggle();
-    await user.click(screen.getByRole("button", { name: "Switch to dark mode" }));
+    render(<App />);
+    await chooseThemeEntry("Dark mode");
     expect(document.documentElement).toHaveClass("dark");
   });
 });
