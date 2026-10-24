@@ -1,0 +1,29 @@
+{
+  "width": 1220,
+  "height": 780,
+  "duration_seconds": 30.36,
+  "samples": [
+    {
+      "time_seconds": 5,
+      "grey_bottom_fraction": 0
+    },
+    {
+      "time_seconds": 7.59,
+      "grey_bottom_fraction": 0
+    },
+    {
+      "time_seconds": 15.18,
+      "grey_bottom_fraction": 0
+    },
+    {
+      "time_seconds": 22.77,
+      "grey_bottom_fraction": 0
+    },
+    {
+      "time_seconds": 30.11,
+      "grey_bottom_fraction": 0
+    }
+  ],
+  "matches_reference_dimensions": true,
+  "grey_padding_detected": false
+}

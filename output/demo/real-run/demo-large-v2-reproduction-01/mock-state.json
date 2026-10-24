@@ -1,0 +1,35 @@
+{
+  "session_id": "b64fac3e-1fba-4707-b275-ab737e633291",
+  "accounts": [
+    {
+      "id": "account-alex",
+      "email": "alex@example.com",
+      "recovery_email": "alex.morgan.backup@example.com",
+      "verified": false
+    },
+    {
+      "id": "account-sam",
+      "email": "sam@example.com",
+      "recovery_email": "sam.recovery@example.com",
+      "verified": false
+    }
+  ],
+  "outbox": [
+    {
+      "id": "342e7a2b-863c-47ab-a12d-692521438342",
+      "account_id": "account-alex",
+      "to": "alex.recovery@example.com",
+      "subject": "Reset your Carbon Zero password",
+      "reset_url": "https://example.invalid/reset/a768a40c-c160-4fff-a8c6-d396623bd37f",
+      "created_at": "2026-10-24T15:31:00.295139Z"
+    },
+    {
+      "id": "59583359-1be0-450c-99b2-2f2a81125a97",
+      "account_id": "account-alex",
+      "to": "alex.morgan.backup@example.com",
+      "subject": "Reset your Carbon Zero password",
+      "reset_url": "https://example.invalid/reset/c1577652-34fa-4737-acb3-7877fde50437",
+      "created_at": "2026-10-24T15:31:09.551758Z"
+    }
+  ]
+}
