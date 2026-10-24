@@ -7,6 +7,13 @@ export type AgentConfig = {
 };
 export const severities = ["High", "Medium", "Low"] as const;
 export type Severity = (typeof severities)[number];
+export type FindingScreenshot = {
+  src: string;
+  title: string;
+  session: string;
+  sourceSeconds: number;
+  description: string;
+};
 export type Finding = {
   id: string;
   title: string;
@@ -23,6 +30,7 @@ export type Finding = {
   action: string;
   evidence: string;
   remediation: string;
+  screenshots?: FindingScreenshot[];
 };
 export type Assessment = {
   id: string;

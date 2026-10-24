@@ -23,7 +23,6 @@ import type { Assessment } from "./model";
 import "@xyflow/react/dist/style.css";
 import "./canvas.css";
 
-export { FindingsList } from "./findings-list";
 export type { Selection } from "./canvas-model";
 
 const nodeTypes = { assessment: CanvasNode, demo: DemoCanvasNode };

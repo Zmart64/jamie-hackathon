@@ -2,14 +2,19 @@ import { Button } from "@/components/ui/button";
 import { AppLink } from "@/components/app-link";
 import { AgentInventory } from "./inventory";
 import { AgentAssessment } from "./assessment";
+import { FindingsPage } from "./findings-page";
 import type { AgentStore } from "./use-agents";
 
 export function AgentsWorkspace({
   store,
   agentId,
+  assessmentId,
+  findings,
 }: {
   store: AgentStore;
   agentId: string | undefined;
+  assessmentId: string | undefined;
+  findings: boolean;
 }) {
   const agent = store.agents.find((item) => item.id === agentId);
   return (
@@ -25,7 +30,20 @@ export function AgentsWorkspace({
           </Button>
         </div>
       ) : agent ? (
-        <AgentAssessment key={agent.id} agent={agent} store={store} />
+        findings ? (
+          <FindingsPage
+            key={`${agent.id}-${assessmentId}`}
+            agent={agent}
+            assessmentId={assessmentId}
+          />
+        ) : (
+          <AgentAssessment
+            key={`${agent.id}-${assessmentId}`}
+            agent={agent}
+            store={store}
+            assessmentId={assessmentId}
+          />
+        )
       ) : (
         <AgentInventory agents={store.agents} />
       )}

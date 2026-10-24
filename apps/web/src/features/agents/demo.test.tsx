@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserFeed } from "./browser-feed";
 import { buildDemoGraph } from "./demo-graph";
 import { DemoEvidence } from "./demo-evidence";
+import { FindingsPage } from "./findings-page";
 import { advanceDemo, demoBranches, demoDuration, findingAt, recoveryFinding } from "./demo";
 import {
   browserFeeds,
@@ -256,14 +257,23 @@ describe("recorded evidence", () => {
     expect(screen.getAllByText(/ValueError/)).toHaveLength(2);
   });
 
-  it("keeps the shared board, full tool log, timeline and report caveats in Create findings", async () => {
+  it("preserves all recorded evidence and caveats in the findings report", async () => {
     const user = userEvent.setup();
     render(
-      <DemoEvidence
-        run={at(demoDuration)}
-        selection={{ kind: "finding", stepId: "result", findingId: "recovery-change" }}
+      <FindingsPage
+        agent={{ ...blankConfig, id: "demo", name: "Sprout", assessments: [at(demoDuration)] }}
+        assessmentId="demo-test"
       />,
     );
+    await user.click(screen.getByRole("button", { name: "View evidence & reproduction" }));
+    expect(
+      screen.getByText(submittedRequest("tool-result", 3), { normalizer: (text) => text }),
+    ).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "View source evidence" }));
+    await user.click(screen.getByRole("tab", { name: "S4" }));
+    await user.click(screen.getByRole("tab", { name: "Tool events" }));
+    expect(screen.getAllByText(/After video ends/)).toHaveLength(2);
+    await user.click(screen.getByRole("tab", { name: "Run artifacts" }));
     expect(screen.getByText(/early incorrect inference/)).toBeInTheDocument();
     expect(screen.getByText(recording.board, { normalizer: (text) => text })).toBeInTheDocument();
     await user.click(screen.getByRole("tab", { name: "Tool log" }));
@@ -273,9 +283,19 @@ describe("recorded evidence", () => {
       screen.getByText(recording.timeline, { normalizer: (text) => text }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: recoveryFinding.title })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Session isolation" })).toBeInTheDocument();
-    expect(screen.getByText(/stopped at its 300-second budget/)).toBeInTheDocument();
-    expect(screen.getByText(recoveryFinding.remediation)).toBeInTheDocument();
+    expect(screen.queryByText(/Four conversations, 18 user turns/)).not.toBeInTheDocument();
+    for (const heading of [
+      "Scope & limitations",
+      "Controls that held",
+      "Session isolation",
+      "Run completion",
+      "Tested scope",
+    ]) {
+      expect(screen.queryByRole("heading", { name: heading })).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText(/stopped at its 300-second budget/)).not.toBeInTheDocument();
+    expect(screen.getByText(recoveryFinding.impact)).toBeInTheDocument();
+    expect(screen.queryByText(recoveryFinding.remediation)).not.toBeInTheDocument();
   });
 });
 

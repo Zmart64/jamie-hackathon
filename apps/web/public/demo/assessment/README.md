@@ -18,6 +18,12 @@ Only framing and encoding change; no conversation content is replaced.
 | tool-result | 169–260                   | 198       |
 | persistence | 265–296.76                | 284       |
 
+The findings report reuses `system.png`, `tool-result.png`, and `persistence.png`
+as expandable success screenshots with short titles. Session and poster timestamps
+remain in the source metadata. S1 and S3 show the successful recovery-address changes; S4
+shows the distinct-domain read-back with `verified: false`. The reset and mapping
+posters are not success evidence and are excluded from the findings gallery.
+
 To regenerate each clip with FFmpeg, use the corresponding START and DURATION:
 
 ```sh

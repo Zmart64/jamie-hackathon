@@ -12,10 +12,14 @@ import {
 export function SiteHeader({
   title,
   agentName,
+  agentHref,
+  findings = false,
   action,
 }: {
   title: string;
   agentName: string | undefined;
+  agentHref?: string | undefined;
+  findings?: boolean;
   action?: ReactNode;
 }) {
   return (
@@ -30,10 +34,24 @@ export function SiteHeader({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem className="min-w-0">
-              <BreadcrumbPage className="truncate font-medium" title={agentName}>
-                {agentName}
-              </BreadcrumbPage>
+              {findings && agentHref ? (
+                <BreadcrumbLink asChild className="truncate" title={agentName}>
+                  <AppLink href={agentHref}>{agentName}</AppLink>
+                </BreadcrumbLink>
+              ) : (
+                <BreadcrumbPage className="truncate font-medium" title={agentName}>
+                  {agentName}
+                </BreadcrumbPage>
+              )}
             </BreadcrumbItem>
+            {findings && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem className="shrink-0">
+                  <BreadcrumbPage className="font-medium">Findings</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
           </BreadcrumbList>
         </Breadcrumb>
       ) : (

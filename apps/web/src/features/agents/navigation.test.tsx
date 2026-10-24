@@ -72,7 +72,7 @@ describe("agent navigation", () => {
     expect(screen.getByRole("tab", { name: "History (0)" })).toBeVisible();
     expect(document.querySelectorAll(".react-flow__node")).toHaveLength(0);
     expect(screen.queryByText("Ready for its first assessment")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Findings" }));
+    await user.click(screen.getByRole("link", { name: "Findings" }));
     expect(screen.getByText("No findings yet.")).toBeVisible();
     expect(screen.queryByLabelText("Evidence details")).not.toBeInTheDocument();
     await user.click(screen.getByRole("link", { name: "Strain home" }));

@@ -4,26 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AssessmentCanvas, FindingsList, type Selection } from "./canvas";
+import { AssessmentCanvas, type Selection } from "./canvas";
+import { AppLink } from "@/components/app-link";
+import { navigate } from "@/lib/navigation";
+import { assessmentPath, findingsPath } from "./routes";
 import { RunStatus } from "./controls";
 import { EvidencePanel } from "./evidence";
 import { AssessmentHistory } from "./history";
 import { stages, type Agent, type Assessment } from "./model";
 import type { AgentStore } from "./use-agents";
 
-type AssessmentView = "canvas" | "findings";
-
-export function AgentAssessment({ agent, store }: { agent: Agent; store: AgentStore }) {
-  const [selectedId, setSelectedId] = useState("");
+export function AgentAssessment({
+  agent,
+  store,
+  assessmentId,
+}: {
+  agent: Agent;
+  store: AgentStore;
+  assessmentId: string | undefined;
+}) {
   const [tab, setTab] = useState("assessment");
-  const [view, setView] = useState<AssessmentView>("canvas");
-  const run = agent.assessments.find((item) => item.id === selectedId) ?? agent.assessments[0];
+  const run = agent.assessments.find((item) => item.id === assessmentId) ?? agent.assessments[0];
   const busy = agent.assessments[0]?.state === "running";
   function start() {
     store.runAgain(agent.id);
-    setSelectedId("");
+    navigate(assessmentPath(agent.id));
     setTab("assessment");
-    setView("canvas");
   }
   return (
     <div className="space-y-5">
@@ -38,14 +44,7 @@ export function AgentAssessment({ agent, store }: { agent: Agent; store: AgentSt
           {busy ? "Assessment running" : "Run assessment"}
         </Button>
       </div>
-      <Tabs
-        value={tab}
-        onValueChange={(next) => {
-          setTab(next);
-          setView("canvas");
-        }}
-        className="gap-5"
-      >
+      <Tabs value={tab} onValueChange={setTab} className="gap-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <TabsList className="h-10! gap-1">
             <TabsTrigger className="h-8!" value="assessment">
@@ -56,36 +55,22 @@ export function AgentAssessment({ agent, store }: { agent: Agent; store: AgentSt
             </TabsTrigger>
           </TabsList>
           {tab === "assessment" && hasExplorer(run) && (
-            <AssessmentViewToggle view={view} onChange={setView} />
+            <AssessmentNavigation agent={agent} run={run} />
           )}
         </div>
         <TabsContent value="assessment" className="min-w-0 space-y-5">
           {run ? (
-            <RunContent
-              key={run.id}
-              agent={agent}
-              run={run}
-              busy={busy}
-              start={start}
-              view={view}
-            />
+            <RunContent key={run.id} agent={agent} run={run} busy={busy} start={start} />
           ) : (
-            <AssessmentExplorer
-              agent={agent}
-              run={undefined}
-              busy={false}
-              start={start}
-              view={view}
-            />
+            <AssessmentExplorer agent={agent} run={undefined} busy={false} start={start} />
           )}
         </TabsContent>
         <TabsContent value="history">
           <AssessmentHistory
             agent={agent}
             onSelect={(id) => {
-              setSelectedId(id);
+              navigate(assessmentPath(agent.id, id));
               setTab("assessment");
-              setView("canvas");
             }}
           />
           {agent.assessments.length === 0 && (
@@ -101,34 +86,25 @@ export function AgentAssessment({ agent, store }: { agent: Agent; store: AgentSt
 function hasExplorer(run: Assessment | undefined): boolean {
   return run?.state !== "failed" && (run?.state !== "running" || Boolean(run.demo));
 }
-function AssessmentViewToggle({
-  view,
-  onChange,
-}: {
-  view: AssessmentView;
-  onChange: (view: AssessmentView) => void;
-}) {
+function AssessmentNavigation({ agent, run }: { agent: Agent; run: Assessment | undefined }) {
   return (
-    <div className="ml-auto flex h-10 shrink-0 items-center gap-1 rounded-lg border p-[3px]">
-      <Button
-        size="sm"
-        variant={view === "canvas" ? "secondary" : "ghost"}
-        aria-pressed={view === "canvas"}
-        onClick={() => onChange("canvas")}
-      >
-        <Waypoints aria-hidden="true" />
-        Canvas
+    <nav
+      aria-label="Assessment views"
+      className="ml-auto flex h-10 shrink-0 items-center gap-1 rounded-lg border p-[3px]"
+    >
+      <Button asChild size="sm" variant="secondary">
+        <AppLink href={assessmentPath(agent.id, run?.id)} aria-current="page">
+          <Waypoints aria-hidden="true" />
+          Canvas
+        </AppLink>
       </Button>
-      <Button
-        size="sm"
-        variant={view === "findings" ? "secondary" : "ghost"}
-        aria-pressed={view === "findings"}
-        onClick={() => onChange("findings")}
-      >
-        <List aria-hidden="true" />
-        Findings
+      <Button asChild size="sm" variant="ghost">
+        <AppLink href={findingsPath(agent.id, run?.id)}>
+          <List aria-hidden="true" />
+          Findings
+        </AppLink>
       </Button>
-    </div>
+    </nav>
   );
 }
 function RunContent({
@@ -136,13 +112,11 @@ function RunContent({
   run,
   busy,
   start,
-  view,
 }: {
   agent: Agent;
   run: Assessment;
   busy: boolean;
   start: (id?: string) => void;
-  view: AssessmentView;
 }) {
   if (run.state === "running" && !run.demo) return <ScanProgress run={run} />;
   if (run.state === "failed")
@@ -165,35 +139,26 @@ function RunContent({
         </CardContent>
       </Card>
     );
-  return <AssessmentExplorer agent={agent} run={run} busy={busy} start={start} view={view} />;
+  return <AssessmentExplorer agent={agent} run={run} busy={busy} start={start} />;
 }
 function AssessmentExplorer({
   agent,
   run,
   busy,
   start,
-  view,
 }: {
   agent: Agent;
   run: Assessment | undefined;
   busy: boolean;
   start: (id?: string) => void;
-  view: AssessmentView;
 }) {
   const [inspecting, setInspecting] = useState(false);
   const inspectionTrigger = useRef<HTMLElement | null>(null);
   const [selection, setSelection] = useState<Selection>(() =>
     run?.findings[0] ? { kind: "finding", findingId: run.findings[0].id } : { kind: "baseline" },
   );
-  const findingsSelection = selectFinding(run, selection);
   const evidence = (
-    <EvidencePanel
-      agent={agent}
-      run={run}
-      selection={view === "findings" ? findingsSelection : selection}
-      onRetest={start}
-      busy={busy}
-    />
+    <EvidencePanel agent={agent} run={run} selection={selection} onRetest={start} busy={busy} />
   );
   return (
     <>
@@ -206,43 +171,32 @@ function AssessmentExplorer({
           interpreting the results.
         </p>
       )}
-      {view === "canvas" ? (
-        <AssessmentCanvas
-          run={run}
-          selection={selection}
-          onSelect={(next) => {
-            inspectionTrigger.current = document.activeElement as HTMLElement;
-            setSelection(next);
-            setInspecting(true);
-          }}
-          details={
-            inspecting
-              ? {
-                  content: evidence,
-                  onClose: () => {
-                    setInspecting(false);
-                    inspectionTrigger.current?.focus({ preventScroll: true });
-                  },
-                }
-              : undefined
+      <AssessmentCanvas
+        run={run}
+        selection={selection}
+        onSelect={(next) => {
+          if (next.kind === "finding" && next.findingId) {
+            navigate(findingsPath(agent.id, run?.id));
+            return;
           }
-        />
-      ) : (
-        <div className="grid min-w-0 grid-cols-1 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_320px]">
-          <FindingsList run={run} selection={findingsSelection} onSelect={setSelection} />
-          {showFindingsEvidence(run, selection) && evidence}
-        </div>
-      )}
+          inspectionTrigger.current = document.activeElement as HTMLElement;
+          setSelection(next);
+          setInspecting(true);
+        }}
+        details={
+          inspecting
+            ? {
+                content: evidence,
+                onClose: () => {
+                  setInspecting(false);
+                  inspectionTrigger.current?.focus({ preventScroll: true });
+                },
+              }
+            : undefined
+        }
+      />
     </>
   );
-}
-function selectFinding(run: Assessment | undefined, selection: Selection): Selection {
-  if (selection.findingId || selection.kind === "gap") return selection;
-  const finding = run?.findings[0];
-  return finding ? { kind: "finding", findingId: finding.id } : selection;
-}
-function showFindingsEvidence(run: Assessment | undefined, selection: Selection): boolean {
-  return Boolean(run && (run.findings.length > 0 || selection.kind === "gap"));
 }
 function ScanProgress({ run }: { run: Assessment }) {
   return (

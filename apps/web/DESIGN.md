@@ -15,7 +15,9 @@ group below it contains the intentionally inert Agent Firewall button.
 History API routes preserve in-memory agents and assessments when moving
 between the home page, inventory, and individual agents. Each agent has a UUID
 and a `/agents/<uuid>` URL. Agent pages show an Agents → agent name breadcrumb
-in the header; browser Back and Forward also work. A deployed host must serve
+in the header; `/agents/<uuid>/findings` adds a Findings breadcrumb. The optional
+`assessment` query selects a specific run on either page, preserving historical
+reports and their return links. Browser Back and Forward also work. A deployed host must serve
 the app entry point for these paths (Vite handles this during development).
 The sidebar uses the standard non-collapsing API, with a compact, always-visible
 icon rail below 768px. Company and page headers share a height and border baseline.
@@ -148,10 +150,8 @@ The demo includes six sample agents and these interactions:
   and must not be interpreted as 18 exploit attempts.
 - Every session exposes its complete messages, tool calls with arguments/results
   and errors, and final state. Messages appear at their source time; final state
-  appears after the branch clip. Create findings includes the shared board, timeline,
-  tool log, and assessment notes. Notes explain per-session fixture resets, the board’s erroneous
-  cross-session inference, the 300-second budget stop without a finish call,
-  and the final restore receipt after the video ends.
+  appears after the branch clip. Create findings opens the dedicated report page,
+  with the shared board, timeline, tool log, and full session evidence.
 - Four local silent clips are cropped from the source recording for legible
   chat text. Preview and expanded clip follow the same assessment clock and
   hold their last frame. Expanded views show only the session title and video,
@@ -160,7 +160,8 @@ The demo includes six sample agents and these interactions:
   reproduction instructions are in `public/demo/assessment/README.md`.
 - A left-to-right assessment canvas with compact shadcn node cards, smooth branching
   connectors, pan/zoom controls, fit-to-view, and a minimap. Finding branches expand
-  into attack, verification, and finding steps. Selecting a node opens evidence in
+  into attack, verification, and finding steps. Selecting a finding opens the Findings
+  page. Other nodes open evidence in
   a nonmodal shadcn details panel inside the map. It docks beside the canvas on
   desktop and stays within the map bounds on smaller screens. Other nodes and
   page navigation remain usable; Close and Escape return focus to the selected
@@ -168,7 +169,19 @@ The demo includes six sample agents and these interactions:
   The Carbon Zero camera follows new steps until manual pan/zoom, ending on the
   verified outcomes and the final Create findings node. Reduced motion disables camera transitions and node animation.
   Mobile keeps the horizontal layout; previews expand to fit the screen.
-- Step-by-step recorded-attempt replay remains available on the older sample
+- Findings opens a report with High, Medium, and Low totals and numbered findings ordered by
+  severity. Each finding shows its severity, impact, and expandable reproduction
+  evidence. Status and confirmation badges, explanatory ordering text, remediation
+  blocks, activity metrics, coverage gaps, introductory summaries, an overall total
+  box, and scope/limitation cards are omitted from this page.
+  Findings with captured screenshots show titled previews without session labels,
+  timestamps or descriptions; each opens in a keyboard-accessible image dialog. The recorded
+  recovery finding reuses the S1, S3, and S4 success frames. Missing images can be
+  retried without losing access to the transcript and tool evidence.
+  Recorded reports include all four conversations with tool
+  events and state snapshots, and the original board, tool log, and timeline.
+  Running, untested, failed, incomplete, and unavailable reports have distinct states.
+- Step-by-step recorded-attempt replay remains available on attempt nodes in older sample
   assessments. Previous assessments are opened through History.
 - Starting an assessment from an older finding replays the same pipeline run.
   There is no simulated-fix path; previous assessments remain in History.

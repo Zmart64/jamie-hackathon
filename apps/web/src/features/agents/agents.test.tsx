@@ -44,7 +44,7 @@ describe("agent workspace", () => {
     expect(screen.queryByRole("columnheader", { name: "Environment" })).not.toBeInTheDocument();
   });
 
-  it("opens agents, synchronizes finding selection, and replays recorded evidence", async () => {
+  it("keeps attempt replay on the canvas and opens all findings in a report", async () => {
     const user = userEvent.setup();
     window.history.replaceState(null, "", `/agents/${supportId}`);
     render(<App />);
@@ -57,16 +57,15 @@ describe("agent workspace", () => {
     expect(
       screen.getByRole("button", { name: "Connection & baseline: Ordinary task completed" }),
     ).toHaveFocus();
-    await user.click(screen.getByRole("button", { name: "Expand Data disclosure" }));
-    expect(screen.getByRole("button", { name: "Collapse Data disclosure" })).toHaveAttribute(
+    await user.click(screen.getByRole("button", { name: "Expand Approval bypass" }));
+    expect(screen.getByRole("button", { name: "Collapse Approval bypass" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );
-    await user.click(screen.getByRole("button", { name: "Findings" }));
-    await user.click(screen.getByRole("button", { name: /External action bypassed approval/ }));
-    expect(
-      screen.getByRole("heading", { name: "External action bypassed approval" }),
-    ).toBeVisible();
+    await user.click(
+      screen.getByRole("button", { name: "Attack attempt: Adversarial input submitted" }),
+    );
+    expect(screen.getByRole("heading", { name: "Attack attempt" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Replay recorded attempt" }));
     expect(screen.getByText("1. Submit adversarial input")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Next replay step" }));
@@ -74,10 +73,18 @@ describe("agent workspace", () => {
     await user.click(screen.getByRole("button", { name: "Next replay step" }));
     expect(screen.getByText("3. Verify the outcome")).toBeVisible();
     expect(screen.getByRole("button", { name: "Next replay step" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Canvas" }));
+    await user.click(screen.getByRole("button", { name: "Close step details" }));
+    await user.click(screen.getByRole("link", { name: "Findings" }));
+    expect(
+      screen.getByRole("heading", { name: "External action bypassed approval" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: "Restricted customer data disclosed" }),
+    ).toBeVisible();
+    await user.click(screen.getByRole("link", { name: "Back to assessment" }));
     expect(
       screen.getByRole("button", { name: "Approval bypass: Incoming messages" }),
-    ).toHaveAttribute("aria-pressed", "true");
+    ).toBeVisible();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /20 attempts blocked/ })).toBeVisible();
     expect(
@@ -156,9 +163,12 @@ describe("agent workspace", () => {
     const view = render(<App />);
     expect(screen.queryByText(/Older deployment tested/)).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Assessment incomplete");
-    await user.click(screen.getByRole("button", { name: "Findings" }));
     await user.click(screen.getByRole("button", { name: /4 inconclusive attempts/ }));
+    expect(screen.getByText(/4 inconclusive attempts/)).toBeVisible();
     expect(screen.getByRole("heading", { name: "Incomplete evidence" })).toBeVisible();
+    await user.click(screen.getByRole("link", { name: "Findings" }));
+    expect(screen.getByRole("heading", { name: "No confirmed findings" })).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Incomplete evidence" })).not.toBeInTheDocument();
     view.unmount();
     window.history.replaceState(null, "", "/agents/removed");
     render(<App />);
@@ -185,7 +195,7 @@ describe("agent workspace", () => {
     expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "History (2)" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Run assessment" })).toBeEnabled();
-    await user.click(screen.getByRole("button", { name: "Findings" }));
+    await user.click(screen.getByRole("link", { name: "Findings" }));
     expect(
       screen.getByRole("heading", {
         name: "Recovery email changed without ownership verification",
