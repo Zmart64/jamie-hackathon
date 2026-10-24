@@ -1,0 +1,24 @@
+{
+  "name": "@strain/redteam",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "browser": "tsx src/main.ts --mode browser",
+    "rehearsal": "tsx src/main.ts --mode rehearsal",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "1.3.0",
+    "@playwright/mcp": "0.0.82",
+    "typebox": "1.3.27"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "4.1.12"
+  }
+}
