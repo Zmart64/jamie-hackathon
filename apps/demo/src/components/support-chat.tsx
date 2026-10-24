@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import type { SproutMood } from "./sprout";
+import { useSupportChat } from "../hooks/use-support-chat";
 import { ChatSprout } from "./chat-sprout";
 
 const introduction = [
@@ -53,10 +54,63 @@ function IntroBubble({
   );
 }
 
+function sproutMood(
+  active: boolean,
+  pending: boolean,
+  streaming: boolean,
+  betweenMessages: boolean,
+  resting: SproutMood,
+): SproutMood {
+  if (!active) return "idle";
+  if (pending) return "thinking";
+  if (streaming) return betweenMessages ? "thinking" : "replying";
+  return resting;
+}
+
+function ChatRecovery({
+  chat,
+  onRestart,
+}: {
+  chat: ReturnType<typeof useSupportChat>;
+  onRestart: () => void;
+}) {
+  const { messages, pending } = chat;
+  return (
+    <>
+      {chat.error && (
+        <div className="chat-error">
+          <p role="alert">{chat.error.message}</p>
+          {chat.error.recovery === "check" && (
+            <Button
+              variant="link"
+              size="sm"
+              disabled={pending}
+              onClick={() => void chat.checkConversation()}
+            >
+              Check conversation
+            </Button>
+          )}
+        </div>
+      )}
+      {(messages.length > 0 || chat.error) && (
+        <Button
+          className="chat-restart"
+          variant="link"
+          size="sm"
+          disabled={pending}
+          onClick={onRestart}
+        >
+          Start new conversation
+        </Button>
+      )}
+    </>
+  );
+}
+
 export function SupportChat({ active }: SupportChatProps) {
   const [elapsed, setElapsed] = useState(0);
-  const [messages, setMessages] = useState<string[]>([]);
-  const [draft, setDraft] = useState("");
+  const chat = useSupportChat();
+  const { messages, draft, setDraft, pending } = chat;
   const [activity, setActivity] = useState(0);
   const [sleepingAfter, setSleepingAfter] = useState<number | null>(null);
   const latestMessageRef = useRef<HTMLDivElement>(null);
@@ -68,27 +122,24 @@ export function SupportChat({ active }: SupportChatProps) {
   );
   const secondElapsed = Math.max(0, elapsed - initialPause - firstDuration - thinkingDuration);
   const shown = firstShown + Math.min(introduction[1].length, Math.floor(secondElapsed / 32) * 2);
-  const streaming = shown < totalLength;
+  const streaming = shown < totalLength && messages.length === 0;
   const latestIndex = shown > firstLength ? 1 : 0;
   const betweenMessages = shown === 0 || shown === firstLength;
   const restingMood = sleepingAfter === activity ? "sleeping" : "idle";
-  const mood = !active
-    ? "idle"
-    : streaming
-      ? betweenMessages
-        ? "thinking"
-        : "replying"
-      : restingMood;
+  const mood = sproutMood(active, pending, streaming, betweenMessages, restingMood);
+  const locked = pending || chat.blocked;
+  const latestAssistant = messages.findLastIndex((message) => message.role === "assistant");
+  const hasReply = latestAssistant >= 0;
 
   function wake() {
     setActivity((current) => current + 1);
   }
 
   useEffect(() => {
-    if (!active || streaming) return;
+    if (!active || streaming || pending) return;
     const timer = window.setTimeout(() => setSleepingAfter(activity), 30_000);
     return () => window.clearTimeout(timer);
-  }, [active, streaming, activity]);
+  }, [active, streaming, pending, activity]);
 
   useEffect(() => {
     if (active) inputRef.current?.focus();
@@ -103,14 +154,12 @@ export function SupportChat({ active }: SupportChatProps) {
   useEffect(() => {
     const history = historyRef.current;
     if (active && history) history.scrollTop = history.scrollHeight;
-  }, [messages, shown, active]);
+  }, [messages, shown, active, pending, chat.error]);
 
   function sendMessage(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    const text = draft.trim();
-    if (!text) return;
-    setMessages((current) => [...current, text]);
-    setDraft("");
+    if (draft.trim() && !locked) setElapsed(5000);
+    void chat.send();
     inputRef.current?.focus();
   }
 
@@ -127,32 +176,59 @@ export function SupportChat({ active }: SupportChatProps) {
       >
         <div className="chat-message-list">
           {introduction.map((text, index) => {
-            const visible = shown - (index === 0 ? 0 : firstLength);
-            return index <= latestIndex ? (
+            const visible = messages.length ? text.length : shown - (index === 0 ? 0 : firstLength);
+            return messages.length > 0 || index <= latestIndex ? (
               <IntroBubble
                 key={text}
                 text={text.slice(0, visible)}
                 complete={visible >= text.length}
-                latest={index === latestIndex}
+                latest={!hasReply && !pending && index === latestIndex}
                 mood={mood}
-                anchorRef={index === latestIndex ? latestMessageRef : null}
+                anchorRef={!hasReply && !pending && index === latestIndex ? latestMessageRef : null}
               />
             ) : null;
           })}
-          {messages.map((text, index) => (
-            <div key={index} className="chat-message chat-message-user">
-              <span className="sr-only">You: </span>
-              <p>{text}</p>
-            </div>
-          ))}
+          {messages.map((message, index) =>
+            message.role === "assistant" ? (
+              <IntroBubble
+                key={message.id}
+                text={message.content}
+                complete
+                latest={!pending && index === latestAssistant}
+                mood={mood}
+                anchorRef={!pending && index === latestAssistant ? latestMessageRef : null}
+              />
+            ) : (
+              <div key={message.id} className="chat-message chat-message-user">
+                <span className="sr-only">You: </span>
+                <p>{message.content}</p>
+              </div>
+            ),
+          )}
+          {pending && (
+            <IntroBubble
+              text=""
+              complete={false}
+              latest
+              mood="thinking"
+              anchorRef={latestMessageRef}
+            />
+          )}
           <ChatSprout
             anchorRef={latestMessageRef}
-            messageIndex={latestIndex}
+            messageIndex={latestIndex + messages.length * 2 + Number(pending)}
             active={active}
             mood={mood}
           />
         </div>
       </div>
+      <ChatRecovery
+        chat={chat}
+        onRestart={() => {
+          chat.restart();
+          inputRef.current?.focus();
+        }}
+      />
       <form className="chat-composer" onSubmit={sendMessage}>
         <Label htmlFor="sprout-message" className="sr-only">
           Message Sprout
@@ -163,6 +239,7 @@ export function SupportChat({ active }: SupportChatProps) {
           placeholder="Type your message…"
           value={draft}
           maxLength={2000}
+          readOnly={locked}
           autoComplete="off"
           onFocus={wake}
           onChange={(event) => {
@@ -177,11 +254,13 @@ export function SupportChat({ active }: SupportChatProps) {
             size="icon-sm"
             className="chat-send"
             aria-label="Send message"
+            disabled={locked}
           >
             <ArrowUp aria-hidden="true" />
           </Button>
         )}
       </form>
+      <p className="chat-demo-note">Demo recovery · No real emails are sent.</p>
     </div>
   );
 }

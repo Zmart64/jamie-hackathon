@@ -326,6 +326,26 @@
 .chat-stream-caret[hidden] {
   display: none;
 }
+.helper-bubble .chat-demo-note {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--color-muted-foreground);
+}
+.chat-error {
+  max-height: 120px;
+  overflow-y: auto;
+  padding-block: 8px;
+}
+.chat-error p {
+  color: var(--color-destructive);
+  font-size: 12px;
+}
+.chat-restart {
+  align-self: flex-start;
+  flex-shrink: 0;
+  color: var(--color-muted-foreground);
+  font-size: 11px;
+}
 .chat-composer {
   position: relative;
   flex-shrink: 0;

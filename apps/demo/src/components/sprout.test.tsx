@@ -1,5 +1,6 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
+import { json, mockSupport, turn } from "../lib/support-test-fixtures";
 import { LoginHelper } from "./login-helper";
 
 it("animates only the active reply and restores the launcher when closed", async () => {
@@ -129,5 +130,39 @@ it("sleeps after 30 quiet seconds, resets on typing, and wakes when reopened", a
   } finally {
     unmount();
     vi.useRealTimers();
+  }
+});
+
+it("moves Sprout from the thinking bubble to the received backend reply", async () => {
+  const offset = vi.spyOn(HTMLElement.prototype, "offsetTop", "get").mockImplementation(function (
+    this: HTMLElement,
+  ) {
+    return this.textContent?.includes("Thinking…") ? 400 : 300;
+  });
+  const fetchMock = mockSupport();
+  let resolveReply!: (response: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise((resolve) => {
+      resolveReply = resolve;
+    }),
+  );
+  const { container, unmount } = render(<LoginHelper topic="offer" />);
+  try {
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "I need help" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    const avatar = container.querySelector(".chat-sprout");
+    expect(avatar).toHaveStyle({ transform: "translateY(400px)" });
+    await act(async () => {
+      resolveReply(json(turn()));
+      await Promise.resolve();
+    });
+    expect(screen.getByText("How can I help?")).toBeVisible();
+    expect(avatar).toHaveStyle({ transform: "translateY(300px)" });
+    expect(container.querySelector(".chat-sprout")).toBe(avatar);
+  } finally {
+    unmount();
+    offset.mockRestore();
+    vi.unstubAllGlobals();
   }
 });
