@@ -1,7 +1,12 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./app";
+
+beforeAll(async () => {
+  // Check rendered behavior without timing the chart's cold module transform on CI.
+  await import("./components/chart-area-interactive");
+});
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
