@@ -82,11 +82,13 @@ function AgentRow({ agent }: { agent: Agent }) {
     }))
     .filter(({ count }) => count > 0);
   return (
-    <TableRow>
+    // The name link stretches over the whole row, so the row is one click target
+    // with a single accessible link (Cmd/middle-click still open a new tab).
+    <TableRow className="group relative">
       <TableCell className="py-5 pl-5">
         <AppLink
           href={`/agents/${agent.id}`}
-          className="rounded-sm font-medium hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+          className="font-medium outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:ring-2 focus-visible:after:ring-ring focus-visible:after:ring-inset"
         >
           {agent.name}
         </AppLink>
@@ -106,11 +108,10 @@ function AgentRow({ agent }: { agent: Agent }) {
       </TableCell>
       <TableCell className="text-xs text-muted-foreground">{run?.date ?? "—"}</TableCell>
       <TableCell className="pr-4">
-        <Button asChild variant="ghost" size="icon-sm">
-          <AppLink href={`/agents/${agent.id}`} aria-label={`Open ${agent.name}`}>
-            <ArrowRight aria-hidden="true" />
-          </AppLink>
-        </Button>
+        <ArrowRight
+          className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground motion-reduce:transition-none"
+          aria-hidden="true"
+        />
       </TableCell>
     </TableRow>
   );
