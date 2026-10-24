@@ -60,11 +60,13 @@ export function useSupportChat() {
 
   useEffect(() => () => request.current?.abort(), []);
 
-  const canSend = Boolean(draft.trim()) && !blocked;
+  function canSend(text: string) {
+    return Boolean(text) && !blocked;
+  }
 
-  async function send() {
-    const text = draft.trim();
-    if (!canSend || request.current) return;
+  async function send(message: string) {
+    const text = message.trim();
+    if (!canSend(text) || request.current) return;
     const controller = new AbortController();
     request.current = controller;
     const optimistic: ChatMessage = { id: crypto.randomUUID(), role: "user", content: text };
