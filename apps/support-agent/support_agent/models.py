@@ -85,6 +85,7 @@ class Turn(BaseModel):
     turn_id: str = Field(default_factory=new_id)
     status: Literal["completed", "failed"] = "completed"
     reply: str | None = None
+    reply_source: Literal["model", "refusal_fallback"] = "model"
     messages: list[ChatMessage] = Field(default_factory=list[ChatMessage])
     tool_events: list[ToolEvent] = Field(
         default_factory=list[ToolEvent],
