@@ -27,6 +27,7 @@ export type FlowNodeData = {
     | "Verified"
     | "High"
     | "Medium"
+    | "Low"
     | "Incomplete"
     | "Running"
     | "Blocked"

@@ -36,12 +36,12 @@ export function AppSidebar() {
                 <img
                   src="/brand/wordmark-light.svg"
                   alt=""
-                  className="hidden h-7 w-auto md:block dark:md:hidden"
+                  className="hidden h-6 w-auto md:block dark:md:hidden"
                 />
                 <img
                   src="/brand/wordmark-dark.svg"
                   alt=""
-                  className="hidden h-7 w-auto dark:md:block"
+                  className="hidden h-6 w-auto dark:md:block"
                 />
               </AppLink>
             </SidebarMenuButton>

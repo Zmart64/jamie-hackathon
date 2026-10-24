@@ -1,9 +1,9 @@
-import { CheckCircle2, ShieldAlert } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "cn";
 import type { Assessment } from "./model";
 import type { Selection } from "./canvas-model";
+import { SeverityIcon } from "./severity";
 
 export function FindingsList({
   run,
@@ -27,14 +27,14 @@ export function FindingsList({
           )}
           onClick={() => onSelect({ kind: "finding", findingId: finding.id })}
         >
-          <ShieldAlert className="size-5 shrink-0 text-primary" aria-hidden="true" />
+          <SeverityIcon severity={finding.severity} className="size-5" />
           <span className="min-w-0 flex-1">
             <span className="block font-medium">{finding.title}</span>
             <span className="mt-1 block text-xs font-normal text-muted-foreground">
               {finding.scenario} · {finding.surface}
             </span>
           </span>
-          <Badge variant="secondary">{finding.severity}</Badge>
+          <span className="text-xs font-medium text-muted-foreground">{finding.severity}</span>
         </Button>
       ))}
       {run.state === "running" && !run.findings.length && (

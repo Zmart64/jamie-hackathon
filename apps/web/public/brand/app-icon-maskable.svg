@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title">
-<title id="title">STRAIN app icon</title>
-<rect width="1024" height="1024" rx="0" fill="#2563EB"/>
-<g transform="translate(205 302.532) scale(0.600196)"><path fill="#FFFFFF" transform="translate(-20 698) scale(1 -1)" d="M665 0H507L457 166H224L174 0H20L250 698H438ZM420 295 377 440 342 560H337L303 440L260 295Z"/>
-<path fill="#FFFFFF" transform="translate(641 698) scale(1 -1)" d="M382 0H50V121H140V577H50V698H382V577H292V121H382Z"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+<title id="title">Strain app icon</title>
+<defs><linearGradient id="core" x1="0" y1="0" x2="1" y2="0"><stop offset="0.0" stop-color="#7C6CFF"/><stop offset="0.3" stop-color="#3FD0E0"/><stop offset="0.55" stop-color="#E9F46A"/><stop offset="0.8" stop-color="#FF8FB1"/><stop offset="1.0" stop-color="#9B7BFF"/></linearGradient></defs><rect width="64" height="64" rx="0" fill="#0B0B0F"/><g transform="translate(32 32) scale(0.62) translate(-32 -32)"><g transform="translate(32 32) skewX(-14) translate(-32 -32)"><rect x="26" y="11" width="26" height="9" rx="2.5" fill="#EDE8DC"/><rect x="12" y="25" width="40" height="14" rx="2.5" fill="url(#core)"/><rect x="12" y="44" width="26" height="9" rx="2.5" fill="#EDE8DC"/></g></g>
 </svg>
