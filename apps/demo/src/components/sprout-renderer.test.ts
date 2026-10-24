@@ -35,7 +35,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function start(reducedMotion = false) {
+function start(reducedMotion = false, compact = true) {
   vi.stubGlobal("matchMedia", () => ({
     matches: reducedMotion,
     addEventListener: vi.fn(),
@@ -44,10 +44,10 @@ function start(reducedMotion = false) {
   renderer = createSproutRenderer(
     document.createElement("canvas"),
     document.createElement("canvas"),
-    32,
-    true,
+    compact ? 32 : 80,
+    compact,
   );
-  if (!renderer) throw new Error("Expected a compact Sprout renderer");
+  if (!renderer) throw new Error("Expected a Sprout renderer");
   return renderer;
 }
 
@@ -109,4 +109,13 @@ it("uses the library's breathing sleep pose and blends back to awake", async () 
   await vi.advanceTimersByTimeAsync(1500);
   expect(draw.mock.lastCall?.[2].w[0]).toBeGreaterThan(0.99);
   expect(draw.mock.lastCall?.[2].pitch).not.toBe(sleepingPose?.pitch);
+});
+
+it("keeps the launcher gently alive without periodic jumps", async () => {
+  start(false, false);
+  await vi.advanceTimersByTimeAsync(40_000);
+  const poses = draw.mock.calls.map((call) => call[2]);
+  const heights = poses.map((pose) => pose.y);
+  expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(4);
+  expect(new Set(poses.map((pose) => pose.breath)).size).toBeGreaterThan(10);
 });

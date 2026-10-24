@@ -58,6 +58,7 @@ export function LoginHelper({ topic }: { topic: HelpTopic }) {
         onClick={() => setOpen(true)}
       >
         {!open && <Sprout />}
+        <span className="helper-launcher-label">Need help?</span>
       </Button>
     </aside>
   );
