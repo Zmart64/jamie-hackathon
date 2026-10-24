@@ -1,4 +1,4 @@
-.PHONY: setup hooks check format test security dev support-agent require-mise
+.PHONY: setup hooks check format test security dev dev-demo support-agent require-mise
 
 setup: | require-mise
 	mise trust mise.toml
@@ -39,7 +39,7 @@ check: | require-mise
 
 test: | require-mise
 	mise exec -- uv run --locked pytest
-	mise exec -- pnpm --filter @strain/web test
+	mise exec -- pnpm -r test
 
 security: | require-mise
 	.tools/actionlint -shellcheck= -pyflakes=
@@ -57,6 +57,9 @@ dev: | require-mise
 
 support-agent: | require-mise
 	mise exec -- uv run --locked support-agent
+
+dev-demo: | require-mise
+	mise exec -- pnpm run dev:demo
 
 require-mise:
 	@command -v mise >/dev/null 2>&1 || { \
