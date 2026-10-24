@@ -6,3 +6,8 @@ node_modules/
 dist/
 build/
 coverage/
+apps/redteam/.pi/
+apps/redteam/board.md
+apps/redteam/models-store.json
+apps/redteam/.playwright/
+apps/redteam/runs/
