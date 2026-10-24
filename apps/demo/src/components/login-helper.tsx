@@ -6,10 +6,22 @@ import { SupportChat } from "./support-chat";
 
 export type HelpTopic = "welcome" | "offer" | "password" | "email";
 
-export function LoginHelper({ topic }: { topic: HelpTopic }) {
+export function LoginHelper({
+  topic,
+  openRequest = 0,
+}: {
+  topic: HelpTopic;
+  openRequest?: number;
+}) {
+  const [previousRequest, setPreviousRequest] = useState(openRequest);
   const [open, setOpen] = useState(topic !== "welcome");
   const launcherRef = useRef<HTMLButtonElement>(null);
   const restoreFocus = useRef(false);
+
+  if (previousRequest !== openRequest) {
+    setPreviousRequest(openRequest);
+    setOpen(topic !== "welcome");
+  }
 
   useEffect(() => {
     if (!open && restoreFocus.current) {
