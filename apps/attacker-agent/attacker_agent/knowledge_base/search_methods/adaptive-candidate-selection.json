@@ -1,0 +1,24 @@
+{
+  "id": "adaptive-candidate-selection",
+  "kind": "search_method",
+  "title": "Adaptive candidate selection and mutation",
+  "description": "Select, revise or abandon candidates using observed feedback and coverage of distinct hypotheses. Search strategy determines which candidate to try; it is separate from the mechanism and injection surface.",
+  "surfaces": [],
+  "when_to_try": [
+    "Choosing the next experiment after a reply or comparing alternative candidates."
+  ],
+  "prerequisites": ["Explicit trial budgets, feedback access and records of previous attempts."],
+  "limitations": [
+    "AgentVigil uses benchmark-derived success feedback; the current attacker receives public chat replies only.",
+    "Best-of-N and corpus-level results are not one-candidate success probabilities.",
+    "This record does not add MCTS, branching, replay or extra target calls to the controller."
+  ],
+  "sources": [
+    {
+      "reference": "https://aclanthology.org/2025.findings-emnlp.1258.pdf",
+      "evidence_kind": "benchmark",
+      "note": "AgentVigil combines a seed corpus, semantic mutation, scoring and tree search for indirect prompt injection."
+    }
+  ],
+  "related_techniques": ["workflow-pretexts", "forged-context", "multi-turn-chaining"]
+}

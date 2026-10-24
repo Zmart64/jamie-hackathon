@@ -1,9 +1,12 @@
-model = "abliterated-model-large-flash"
+model = "abliterated-model-large-v2"
 provider_base_url = "https://api.abliteration.ai/v1"
 target_base_url = "http://127.0.0.1:8000"
-max_output_tokens = 4096
+max_output_tokens = 8192
 max_context_chars = 100000
-request_timeout_seconds = 60
+structured_output = "auto"
+reasoning_effort = "low"
+feedback_mode = "network_receipts"
+request_timeout_seconds = 90
 host = "127.0.0.1"
 port = 8001
 allowed_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
