@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AppLink } from "@/components/app-link";
@@ -14,7 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RunStatus } from "./controls";
-import { type Agent } from "./model";
+import { severities, type Agent } from "./model";
+import { SeverityLabel } from "./severity";
 
 export function AgentInventory({ agents }: { agents: Agent[] }) {
   const [query, setQuery] = useState("");
@@ -75,8 +75,12 @@ export function AgentInventory({ agents }: { agents: Agent[] }) {
 function AgentRow({ agent }: { agent: Agent }) {
   const run = agent.assessments[0];
   const findings = run?.findings ?? [];
-  const high = findings.filter((finding) => finding.severity === "High").length;
-  const medium = findings.filter((finding) => finding.severity === "Medium").length;
+  const counts = severities
+    .map((severity) => ({
+      severity,
+      count: findings.filter((finding) => finding.severity === severity).length,
+    }))
+    .filter(({ count }) => count > 0);
   return (
     <TableRow>
       <TableCell className="py-5 pl-5">
@@ -91,10 +95,11 @@ function AgentRow({ agent }: { agent: Agent }) {
         <RunStatus run={run} />
       </TableCell>
       <TableCell>
-        <div className="flex gap-1.5">
-          {high > 0 && <Badge variant="destructive">{high} high</Badge>}
-          {medium > 0 && <Badge variant="secondary">{medium} medium</Badge>}
-          {high + medium === 0 && (
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          {counts.map(({ severity, count }) => (
+            <SeverityLabel key={severity} severity={severity} count={count} />
+          ))}
+          {counts.length === 0 && (
             <span className="text-muted-foreground">{findingSummary(run)}</span>
           )}
         </div>

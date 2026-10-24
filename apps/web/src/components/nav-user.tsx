@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { ThemeMenuItem } from "@/components/theme-toggle";
 
 const user = {
   name: "Justus",
@@ -61,12 +62,13 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* These menu entries are intentionally inert prototype placeholders. */}
             <DropdownMenuGroup>
+              {/* Account and Log out are intentionally inert prototype placeholders. */}
               <DropdownMenuItem>
                 <CircleUserRound aria-hidden="true" />
                 Account
               </DropdownMenuItem>
+              <ThemeMenuItem />
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

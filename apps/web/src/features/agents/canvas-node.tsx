@@ -18,6 +18,8 @@ import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { severities } from "./model";
+import { SeverityIcon } from "./severity";
 import {
   nodeWidth,
   nodeHeight,
@@ -152,14 +154,15 @@ export function CanvasNodeFooter({ data }: { data: FlowNodeData }) {
   );
 }
 export function NodeStatus({ status }: { status: FlowNodeData["status"] }) {
-  const severity = status === "High" || status === "Medium" || status === "Detected";
+  const level = severities.find((value) => value === status);
+  const detected = status === "Detected";
   const StatusIcon = status === "Incomplete" ? CircleHelp : CheckCircle2;
   return (
     <Badge
       variant="outline"
       className={cn(
         "rounded-md px-1.5 py-0 text-[10px] font-normal",
-        severity && "border-destructive/20 bg-destructive/5 text-destructive",
+        detected && "border-destructive/20 bg-destructive/5 text-destructive",
         (status === "Passed" || status === "Blocked") &&
           "border-success/20 bg-success/5 text-success",
         status === "Incomplete" && "border-dashed",
@@ -167,7 +170,9 @@ export function NodeStatus({ status }: { status: FlowNodeData["status"] }) {
     >
       {status === "Running" ? (
         <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
-      ) : severity ? (
+      ) : level ? (
+        <SeverityIcon severity={level} />
+      ) : detected ? (
         <ShieldAlert aria-hidden="true" />
       ) : (
         <StatusIcon aria-hidden="true" />

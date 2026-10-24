@@ -4,6 +4,7 @@ import type { Assessment, Finding } from "./model";
 import type { Selection } from "./canvas-model";
 import { demoSteps, type DemoStep } from "./demo-graph";
 import { browserFeeds } from "./demo";
+import { SeverityLabel } from "./severity";
 
 export function DemoEvidence({ run, selection }: { run: Assessment; selection: Selection }) {
   const finding = run.findings.find((item) => item.id === selection.findingId);
@@ -46,9 +47,7 @@ function DemoFindingEvidence({ finding }: { finding: Finding }) {
         <CardTitle className="text-base leading-relaxed">
           <h3>{finding.title}</h3>
         </CardTitle>
-        <Badge variant="destructive" className="w-fit">
-          {finding.severity}
-        </Badge>
+        <SeverityLabel severity={finding.severity} />
       </CardHeader>
       <CardContent className="space-y-4 text-sm">
         <p className="text-muted-foreground">{finding.impact}</p>
