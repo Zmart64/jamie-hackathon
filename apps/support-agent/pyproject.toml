@@ -1,0 +1,19 @@
+[project]
+name = "support-agent"
+version = "0.1.0"
+description = "Claude-powered account support agent with isolated mock tools."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "anthropic==1.8.0",
+  "fastapi==0.141.1",
+  "pydantic==2.13.5",
+  "python-dotenv==1.2.3",
+  "uvicorn==0.53.0",
+]
+
+[project.scripts]
+support-agent = "support_agent.__main__:main"
+
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"

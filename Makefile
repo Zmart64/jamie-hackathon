@@ -1,4 +1,4 @@
-.PHONY: setup hooks check format test security dev require-mise
+.PHONY: setup hooks check format test security dev support-agent require-mise
 
 setup: | require-mise
 	mise trust mise.toml
@@ -54,6 +54,9 @@ format: | require-mise
 
 dev: | require-mise
 	mise exec -- pnpm run dev
+
+support-agent: | require-mise
+	mise exec -- uv run --locked support-agent
 
 require-mise:
 	@command -v mise >/dev/null 2>&1 || { \

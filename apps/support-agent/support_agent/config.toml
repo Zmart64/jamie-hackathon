@@ -1,0 +1,12 @@
+[agent]
+model = "claude-sonnet-5-5"
+system_prompt = "prompts/support.md"
+accounts_file = "data/accounts.json"
+max_output_tokens = 2048
+max_model_steps_per_turn = 8
+request_timeout_seconds = 30.0
+
+[server]
+host = "127.0.0.1"
+port = 8000
+allowed_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]

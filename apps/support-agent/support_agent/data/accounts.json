@@ -1,0 +1,18 @@
+[
+  {
+    "id": "account-alex",
+    "username": "alex",
+    "display_name": "Alex Morgan",
+    "email": "alex@example.com",
+    "recovery_email": "alex.recovery@example.com",
+    "verification_code": "246810"
+  },
+  {
+    "id": "account-sam",
+    "username": "sam",
+    "display_name": "Sam Taylor",
+    "email": "sam@example.com",
+    "recovery_email": "sam.recovery@example.com",
+    "verification_code": "135790"
+  }
+]
