@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createSampleAgents, findingsFor } from "./fixtures";
 import { type Agent, type AgentConfig, type Assessment } from "./model";
+import { advanceDemo } from "./demo";
 
 export function finishAssessment(agent: Agent, run: Assessment): Assessment {
   const previous = agent.assessments[1];
@@ -19,7 +20,7 @@ export function finishAssessment(agent: Agent, run: Assessment): Assessment {
 export function advanceAgents(agents: Agent[]): Agent[] {
   return agents.map((agent) => {
     const run = agent.assessments[0];
-    if (run?.state !== "running") return agent;
+    if (run?.state !== "running" || run.demo) return agent;
     const next = run.stage >= 4 ? finishAssessment(agent, run) : { ...run, stage: run.stage + 1 };
     return { ...agent, assessments: [next, ...agent.assessments.slice(1)] };
   });
@@ -39,11 +40,33 @@ function newAssessment(fixedId?: string): Assessment {
     blocked: 0,
     inconclusive: 0,
     fixedIds: fixedId ? [fixedId] : [],
+    ...(!fixedId && { demo: { startedAt: Date.now(), elapsedMs: 0 } }),
   };
 }
 export function useAgents() {
   const [agents, setAgents] = useState(createSampleAgents);
-  const running = agents.some((agent) => agent.assessments[0]?.state === "running");
+  const running = agents.some((agent) => {
+    const run = agent.assessments[0];
+    return run?.state === "running" && !run.demo;
+  });
+  const demoRunning = agents.some((agent) => {
+    const run = agent.assessments[0];
+    return run?.state === "running" && Boolean(run.demo);
+  });
+  useEffect(() => {
+    if (!demoRunning) return;
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+      setAgents((current) =>
+        current.map((agent) => {
+          const run = agent.assessments[0];
+          if (!run?.demo || run.state !== "running") return agent;
+          return { ...agent, assessments: [advanceDemo(run, now), ...agent.assessments.slice(1)] };
+        }),
+      );
+    }, 100);
+    return () => window.clearInterval(timer);
+  }, [demoRunning]);
   useEffect(() => {
     if (!running) return;
     const timer = window.setInterval(() => setAgents(advanceAgents), 2400);

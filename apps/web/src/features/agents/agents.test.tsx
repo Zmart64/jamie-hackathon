@@ -50,7 +50,7 @@ describe("agent workspace", () => {
     await user.click(
       screen.getByRole("button", { name: "Connection & baseline: Ordinary task completed" }),
     );
-    expect(screen.getByRole("dialog", { name: "Step details" })).toBeVisible();
+    expect(screen.getByRole("complementary", { name: "Step details" })).toBeVisible();
     expect(screen.getByRole("heading", { name: "Connection & baseline" })).toBeVisible();
     await user.keyboard("{Escape}");
     expect(
@@ -83,6 +83,30 @@ describe("agent workspace", () => {
       screen.queryByText(/Sample results|Left to right|steps, .* connections/),
     ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /1 inconclusive attempt/ })).toBeVisible();
+  });
+
+  it("keeps node details inside the map and updates them without blocking the canvas", async () => {
+    const user = userEvent.setup();
+    window.history.replaceState(null, "", `/agents/${supportId}`);
+    render(<App />);
+    const map = screen.getByRole("region", { name: "Assessment flow" });
+    const baseline = screen.getByRole("button", { name: /^Connection & baseline:/ });
+    await user.click(baseline);
+    const details = screen.getByRole("complementary", { name: "Step details" });
+    expect(map).toContainElement(details);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "History (2)" })).toBeVisible();
+    expect(within(details).getByRole("button", { name: "Close step details" })).toHaveFocus();
+    const surface = screen.getByRole("button", { name: /^Attack surface:/ });
+    await user.click(surface);
+    expect(within(details).getByRole("heading", { name: "Mapped attack surface" })).toBeVisible();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("complementary", { name: "Step details" })).not.toBeInTheDocument();
+    expect(surface).toHaveFocus();
+    await user.click(baseline);
+    await user.click(screen.getByRole("button", { name: "Close step details" }));
+    expect(screen.queryByRole("complementary", { name: "Step details" })).not.toBeInTheDocument();
+    expect(baseline).toHaveFocus();
   });
 
   it("opens older assessments through History without a picker or comparison actions", async () => {
@@ -125,11 +149,15 @@ describe("agent workspace", () => {
     expect(screen.queryByText(/Older deployment tested/)).not.toBeInTheDocument();
   });
 
-  it("shows incomplete evidence and missing agent recovery", () => {
+  it("shows incomplete evidence and missing agent recovery", async () => {
+    const user = userEvent.setup();
     window.history.replaceState(null, "", `/agents/${sampleId("Company knowledge assistant")}`);
     const view = render(<App />);
     expect(screen.queryByText(/Older deployment tested/)).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Assessment incomplete");
+    await user.click(screen.getByRole("button", { name: "Findings" }));
+    await user.click(screen.getByRole("button", { name: /4 inconclusive attempts/ }));
+    expect(screen.getByRole("heading", { name: "Incomplete evidence" })).toBeVisible();
     view.unmount();
     window.history.replaceState(null, "", "/agents/removed");
     render(<App />);
@@ -138,23 +166,28 @@ describe("agent workspace", () => {
   });
 
   it("recovers a failed connection and completes a new scan", async () => {
-    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
     const user = userEvent.setup();
     window.history.replaceState(null, "", `/agents/${sampleId("Invoice workflow")}`);
     render(<App />);
     expect(screen.getByText("We couldn’t reach this agent")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Retry demo connection" }));
-    expect(screen.getByRole("progressbar", { name: "Assessment progress" })).toHaveAttribute(
-      "aria-valuenow",
-      "20",
-    );
+    expect(
+      screen.getByRole("button", { name: "Setting up agent: Reserving sandbox" }),
+    ).toBeVisible();
     expect(screen.getByRole("button", { name: "Assessment running" })).toBeDisabled();
     act(() => {
-      vi.advanceTimersByTime(12000);
+      vi.advanceTimersByTime(20000);
     });
     expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "History (2)" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Run assessment" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "Findings" }));
+    expect(
+      screen.getByRole("heading", {
+        name: "Recovery email changed without ownership verification",
+      }),
+    ).toBeVisible();
   });
 });
 
@@ -281,7 +314,7 @@ describe("assessment lifecycle", () => {
       "running",
     );
     act(() => {
-      vi.advanceTimersByTime(12000);
+      vi.advanceTimersByTime(20000);
     });
     expect(result.current.agents.find((agent) => agent.id === id)?.assessments[0]?.state).toBe(
       "complete",

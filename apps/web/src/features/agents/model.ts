@@ -32,6 +32,7 @@ export type Assessment = {
   blocked: number;
   inconclusive: number;
   fixedIds: string[];
+  demo?: { startedAt: number; elapsedMs: number };
 };
 export type Agent = AgentConfig & {
   id: string;
