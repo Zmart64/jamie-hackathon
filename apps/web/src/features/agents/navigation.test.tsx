@@ -13,7 +13,7 @@ describe("agent navigation", () => {
     const user = userEvent.setup();
     render(<App />);
     const inventory = await screen.findByRole("region", { name: "Agent inventory" });
-    const links = within(inventory).getAllByRole("link", { name: /^Open / });
+    const links = within(inventory).getAllByRole("link");
     const paths = links.map((link) => link.getAttribute("href"));
     expect(new Set(paths).size).toBe(6);
     for (const path of paths) expect(path).toMatch(agentPath);
