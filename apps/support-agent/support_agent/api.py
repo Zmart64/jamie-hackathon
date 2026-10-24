@@ -67,7 +67,7 @@ def create_app(settings: Settings | None = None, client: Anthropic | None = None
             client.close()
 
     app = FastAPI(
-        title="ExampleApp Support Agent",
+        title="Carbon Zero Support Agent",
         description="Account-recovery conversations with messages and action receipts.",
         version="0.1.0",
         lifespan=lifespan,

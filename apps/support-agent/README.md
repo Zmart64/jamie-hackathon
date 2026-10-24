@@ -1,6 +1,6 @@
 # Support agent backend
 
-A real Claude-powered, turn-based support agent for ExampleApp's login page.
+A real Claude-powered, turn-based support agent for Carbon Zero's login page.
 Account lookup, verification, recovery settings, and email delivery use isolated,
 in-memory mock data. All instructions, tool descriptions, and responses default
 to English.
