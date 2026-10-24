@@ -77,11 +77,11 @@ export function createSproutRenderer(
   if (!bodyLayer || !detailLayer) return null;
   const layers = [detailLayer, bodyLayer];
   const sim = new BotAvatarSim(0.35);
-  sim.setTurn(compact ? 0.65 : 0.45);
+  sim.setTurn(compact ? 0.65 : 0.25);
   sim.setJump({
-    height: compact ? 12 : 18,
+    height: compact ? 12 : 8,
     spin: 0,
-    every: 12,
+    every: compact ? 12 : 0,
     squash: 1.45,
     stretch: 1.2,
     squashEase: "bouncy",
@@ -108,7 +108,7 @@ export function createSproutRenderer(
     if (disposed) return;
     const dt = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 0;
     lastTime = time;
-    sim.update(dt);
+    sim.update(dt * (compact ? 1 : 0.65));
     paint();
     frame = window.requestAnimationFrame(animate);
   }
@@ -131,7 +131,11 @@ export function createSproutRenderer(
     const y = (event.clientY - bounds.top - bounds.height / 2 - BOT_AVATAR_RISE * size) / size;
     const distance = Math.hypot(x, y);
     const strength = Math.max(0, Math.min(1, (3 - distance) / 2));
-    sim.setPointer(x / Math.max(1, distance), y / Math.max(1, distance), strength);
+    sim.setPointer(
+      x / Math.max(1, distance),
+      y / Math.max(1, distance),
+      strength * (compact ? 1 : 0.4),
+    );
   }
 
   const observer = new IntersectionObserver(([entry]) => {
