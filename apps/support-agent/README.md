@@ -24,6 +24,10 @@ The default address is `http://127.0.0.1:8000`. Open `/docs` to try the API with
 a frontend. `/health` reports the selected model and whether a key is configured;
 it does not make a Claude request or validate the key. Documentation and session
 creation work without a key; chat returns a structured `503` until one is set.
+Health also includes `started_at` and `source_fingerprint`, captured at startup.
+The fingerprint covers package Python source, agent settings, the loaded prompt
+and account fixtures, excluding API credentials. Compare it with the local
+diagnostic command to detect a process running older files or different settings.
 
 Run one process/worker: sessions live in memory and disappear on restart. Each
 session starts with independent demo accounts, verification state, and an empty
@@ -41,6 +45,34 @@ mock inbox. Starting a new session resets the demo.
 Restart the server after changing configuration, prompts, fixtures, or code.
 The model and prompt are fixed for a running service; existing conversations use
 the model selected when their session was created.
+
+Check the running server against the files and configuration in this checkout:
+
+```sh
+mise exec -- uv run --locked python -m support_agent.diagnostics
+```
+
+This health-only check makes no model calls. It reports missing diagnostic
+metadata on older servers, a model mismatch, or a source/configuration mismatch.
+A mismatch can also mean the server intentionally uses another checkout or
+configuration; coordinate before restarting a shared process. Existing in-memory
+sessions disappear when their server restarts.
+
+To diagnose refusals with real provider calls and save the evidence:
+
+```sh
+mise exec -- uv run --locked python -m support_agent.diagnostics \
+  --url http://127.0.0.1:8000 --probe \
+  --output .runs/support-diagnostics/report.json
+```
+
+`--probe` sends five chat messages across two new, isolated sessions. It checks
+capabilities, an ordinary reset to the original inbox, the ownership gate, a
+harmless question after that gate and the same question in a fresh session.
+Tool loops can require multiple provider calls per message. All email effects
+remain in those sessions' mock inboxes. The command exits with status 1 when
+it detects configuration/runtime issues or an explicit provider refusal on a
+control request; refusal of the ownership-gate probe alone is not a pipeline error.
 
 `ANTHROPIC_MODEL` overrides the TOML model. `SUPPORT_AGENT_CONFIG` selects another
 TOML file, and `SUPPORT_AGENT_ENV_FILE` selects another dotenv file. Process
@@ -120,6 +152,21 @@ and operation results to browser network inspection, even when the widget only
 renders chat messages. They contain no attack verdicts or full tool catalog.
 The inspection endpoint separately exposes the mock inbox, including dummy reset
 URLs. Both surfaces are intentionally available for this demo.
+
+Each turn also contains `model_calls`: response ID, actual returned model,
+`stop_reason`, content block types, text length and input/output token counts for
+each provider response, including intermediate tool calls and failed turns.
+These fields exclude prompts, response content and private reasoning. They remain
+available through the conversation history endpoint.
+
+An explicit `stop_reason: "refusal"` with no text is displayed as
+`"I can't help with that request."` and identified by
+`reply_source: "refusal_fallback"`. That sentence comes from the backend's fallback,
+not from the model's text. A normal response declining an account action can
+instead have `stop_reason: "end_turn"`; the diagnostic report leaves its origin as
+`model_reply` without guessing its meaning. Provider/network failures are failed
+turns with error codes, never synthesized refusals. A refusal by itself does not
+show that tool dispatch or conversation history is broken.
 
 Minimal integration:
 

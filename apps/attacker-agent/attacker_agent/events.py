@@ -53,7 +53,15 @@ class RunRecord:
     def finish(self, status: Literal["completed", "stopped", "failed"], reason: str) -> None:
         self.view.status = status
         self.view.stop_reason = reason
-        self.emit("run_finished", {"status": status, "reason": reason})
+        self.emit(
+            "run_finished",
+            {"status": status, "reason": reason, "objective": as_data(self.view.objective)},
+        )
+        directory = self.log_dir / self.view.id
+        directory.mkdir(parents=True, exist_ok=True)
+        temporary = directory / "run.json.tmp"
+        temporary.write_text(self.view.model_dump_json(indent=2) + "\n", encoding="utf-8")
+        temporary.replace(directory / "run.json")
 
     async def stream(self, after: int) -> AsyncIterator[str]:
         cursor = after

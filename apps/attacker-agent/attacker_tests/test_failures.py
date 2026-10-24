@@ -65,6 +65,32 @@ def test_provider_error_is_sanitized_and_not_retried(settings: Settings) -> None
     asyncio.run(exercise())
 
 
+def test_large_profile_avoids_provider_json_mode_and_hides_reasoning(settings: Settings) -> None:
+    async def exercise() -> None:
+        configured = settings.model_copy(
+            update={"model": "abliterated-model-large-v2", "reasoning_effort": "low"}
+        )
+        model, claude = ModelStub(), ClaudeStub()
+        model.add(decision("finish", ""))
+        async with runner(configured, model, claude) as agent:
+            await agent.run()
+            assert agent.view.stop_reason == "attacker_finished"
+            body = model.requests[0]
+            assert "response_format" not in body
+            assert "thinking" not in body
+            assert body["reasoning_effort"] == "low"
+            assert body["include_reasoning"] is False
+        model = ModelStub()
+        for _ in range(configured.decision_repair_attempts + 1):
+            model.add({"action": "unrecognized"})
+        async with runner(configured, model, ClaudeStub()) as agent:
+            await agent.run()
+            assert agent.view.stop_reason == "invalid_decision"
+            assert agent.view.steps == []
+
+    asyncio.run(exercise())
+
+
 def test_target_failure_can_still_have_a_verified_side_effect(settings: Settings) -> None:
     async def exercise() -> None:
         model, claude = ModelStub(), ClaudeStub()

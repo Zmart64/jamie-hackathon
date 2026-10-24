@@ -11,6 +11,8 @@ def settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Settings:
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     monkeypatch.delenv("SUPPORT_AGENT_CONFIG", raising=False)
     return Settings(
+        model="abliterated-model-large-flash",
+        reasoning_effort="none",
         api_key=SecretStr("test-only-placeholder"),
         provider_base_url=HttpUrl("https://attacker.test/v1"),
         target_base_url=HttpUrl("http://support.test"),

@@ -4,15 +4,20 @@ import asyncio
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Annotated
+from uuid import UUID
 
 import httpx
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from pydantic import ValidationError
 
 from attacker_agent.clients import ModelClient, TargetClient
 from attacker_agent.events import RunRecord
+from attacker_agent.knowledge import load_library
+from attacker_agent.knowledge_models import KnowledgeLibrary
 from attacker_agent.models import CreateRun, Health, RunView
+from attacker_agent.replay import ReplayBundle, build_replay, load_record
 from attacker_agent.runner import Runner
 from attacker_agent.settings import Settings, load_settings
 
@@ -27,6 +32,7 @@ class RunService:
         target_http: httpx.AsyncClient | None,
     ) -> None:
         self.settings = settings
+        self.library = load_library()
         self.own_provider = provider_http is None
         self.own_target = target_http is None
         self.provider = provider_http or httpx.AsyncClient(timeout=settings.request_timeout_seconds)
@@ -36,7 +42,13 @@ class RunService:
     def get(self, run_id: str) -> RunRecord:
         record = self.records.get(run_id)
         if record is None:
-            raise HTTPException(status_code=404, detail="Run not found.")
+            try:
+                if str(UUID(run_id)) != run_id:
+                    raise ValueError("Noncanonical run ID")
+                record = load_record(self.settings.log_dir, run_id)
+            except (ValueError, OSError, ValidationError) as error:
+                raise HTTPException(status_code=404, detail="Run not found.") from error
+            self.records[run_id] = record
         return record
 
     def start(self, request: CreateRun) -> RunView:
@@ -50,6 +62,7 @@ class RunService:
             ModelClient(self.provider, self.settings),
             TargetClient(self.target, str(self.settings.target_base_url)),
             self.settings,
+            library=self.library,
         )
         record.task = asyncio.create_task(runner.run())
         return view.model_copy(deep=True)
@@ -118,6 +131,10 @@ def create_app(
     async def start_run(request: CreateRun) -> RunView:
         return service.start(request)
 
+    @app.get("/knowledge", operation_id="getAttackKnowledge")
+    async def get_knowledge() -> KnowledgeLibrary:
+        return service.library.model_copy(deep=True)
+
     @app.get("/runs", operation_id="listAttackRuns")
     async def list_runs() -> list[RunView]:
         return [record.view.model_copy(deep=True) for record in service.records.values()]
@@ -125,6 +142,10 @@ def create_app(
     @app.get("/runs/{run_id}", operation_id="getAttackRun")
     async def get_run(run_id: str) -> RunView:
         return service.get(run_id).view.model_copy(deep=True)
+
+    @app.get("/runs/{run_id}/replay", operation_id="getAttackReplay")
+    async def get_replay(run_id: str) -> ReplayBundle:
+        return build_replay(service.get(run_id), service.library)
 
     @app.post("/runs/{run_id}/stop", operation_id="stopAttackRun")
     async def stop_run(run_id: str) -> RunView:

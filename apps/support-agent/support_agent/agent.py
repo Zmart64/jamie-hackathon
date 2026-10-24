@@ -14,7 +14,7 @@ from anthropic import (
 from anthropic.types.beta import BetaMessage, BetaMessageParam
 from pydantic import BaseModel, JsonValue, TypeAdapter, ValidationError
 
-from support_agent.models import ChatMessage, ErrorDetail, ToolEvent, Turn
+from support_agent.models import ChatMessage, ErrorDetail, ModelCallTrace, ToolEvent, Turn
 from support_agent.settings import AgentSettings
 from support_agent.store import Session
 from support_agent.tools import MockTools
@@ -42,6 +42,18 @@ def _decode_result(content: str) -> JsonValue:
         return JSON_VALUE.validate_json(content)
     except ValidationError:
         return content
+
+
+def _model_call_trace(message: BetaMessage) -> ModelCallTrace:
+    return ModelCallTrace(
+        response_id=message.id,
+        model=message.model,
+        stop_reason=message.stop_reason,
+        content_types=[block.type for block in message.content],
+        text_chars=sum(len(block.text) for block in message.content if block.type == "text"),
+        input_tokens=message.usage.input_tokens,
+        output_tokens=message.usage.output_tokens,
+    )
 
 
 def _record_tools(turn: Turn, message: BetaMessage, response: BetaMessageParam) -> None:
@@ -126,6 +138,7 @@ class SupportAgent:
             max_iterations=self._settings.max_model_steps_per_turn,
         )
         for message in runner:
+            turn.model_calls.append(_model_call_trace(message))
             if message.stop_reason == "tool_use":
                 response = runner.generate_tool_call_response()
                 if response is None:

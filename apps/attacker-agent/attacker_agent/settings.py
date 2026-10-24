@@ -3,6 +3,7 @@
 import os
 import tomllib
 from pathlib import Path
+from typing import Literal
 
 from dotenv import dotenv_values
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, SecretStr
@@ -12,12 +13,18 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 
 class Settings(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
-    model: str = "abliterated-model-large-flash"
+    model: str = "abliterated-model-large-v2"
     provider_base_url: HttpUrl = HttpUrl("https://api.abliteration.ai/v1")
     target_base_url: HttpUrl = HttpUrl("http://127.0.0.1:8000")
-    max_output_tokens: int = Field(default=4096, ge=256, le=16000)
+    max_output_tokens: int = Field(default=8192, ge=256, le=16000)
     max_context_chars: int = Field(default=100000, ge=1000, le=500000)
-    request_timeout_seconds: float = Field(default=60, gt=0, le=300)
+    structured_output: Literal["auto", "json_object", "prompt"] = "auto"
+    reasoning_effort: Literal["none", "low", "high", "max"] = "low"
+    decision_repair_attempts: int = Field(default=2, ge=0, le=2)
+    review_candidates: bool = True
+    feedback_mode: Literal["reply_only", "network_receipts"] = "network_receipts"
+    expected_target_model: str | None = None
+    request_timeout_seconds: float = Field(default=90, gt=0, le=300)
     host: str = "127.0.0.1"
     port: int = Field(default=8001, ge=1, le=65535)
     allowed_origins: list[str] = Field(

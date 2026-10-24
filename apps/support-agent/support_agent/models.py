@@ -76,6 +76,20 @@ class HealthResponse(BaseModel):
     status: Literal["ok"] = "ok"
     model: str
     configured: bool
+    source_fingerprint: str
+    started_at: datetime
+
+
+class ModelCallTrace(BaseModel):
+    """Provider response metadata; excludes prompts, content and private reasoning."""
+
+    response_id: str
+    model: str
+    stop_reason: str | None
+    content_types: list[str]
+    text_chars: int
+    input_tokens: int
+    output_tokens: int
 
 
 class Turn(BaseModel):
@@ -86,6 +100,7 @@ class Turn(BaseModel):
     status: Literal["completed", "failed"] = "completed"
     reply: str | None = None
     reply_source: Literal["model", "refusal_fallback"] = "model"
+    model_calls: list[ModelCallTrace] = Field(default_factory=list[ModelCallTrace])
     messages: list[ChatMessage] = Field(default_factory=list[ChatMessage])
     tool_events: list[ToolEvent] = Field(
         default_factory=list[ToolEvent],

@@ -19,7 +19,9 @@ from support_agent.models import (
     SendMessageRequest,
     SessionInfo,
     Turn,
+    timestamp,
 )
+from support_agent.runtime import source_fingerprint
 from support_agent.settings import Settings, load_settings
 from support_agent.store import Session, SessionStore
 
@@ -59,6 +61,12 @@ def create_app(settings: Settings | None = None, client: Anthropic | None = None
     owns_client = client is None
     client = client or _build_client(settings)
     agent = SupportAgent(settings.agent, prompt, client)
+    runtime = HealthResponse(
+        model=settings.agent.model,
+        configured=client is not None,
+        source_fingerprint=source_fingerprint(settings, prompt),
+        started_at=timestamp(),
+    )
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncGenerator[None]:
@@ -83,7 +91,7 @@ def create_app(settings: Settings | None = None, client: Anthropic | None = None
 
     @app.get("/health", operation_id="getHealth")
     def health() -> HealthResponse:
-        return HealthResponse(model=settings.agent.model, configured=client is not None)
+        return runtime
 
     @app.post(
         "/sessions",
