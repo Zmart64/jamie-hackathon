@@ -10,10 +10,11 @@ export function FindingsList({
   selection,
   onSelect,
 }: {
-  run: Assessment;
+  run: Assessment | undefined;
   selection: Selection;
   onSelect: (selection: Selection) => void;
 }) {
+  if (!run) return <p className="p-8 text-sm text-muted-foreground">No findings yet.</p>;
   return (
     <div className="space-y-3">
       {run.findings.map((finding) => (
@@ -36,7 +37,10 @@ export function FindingsList({
           <Badge variant="secondary">{finding.severity}</Badge>
         </Button>
       ))}
-      {!run.findings.length && (
+      {run.state === "running" && !run.findings.length && (
+        <p className="p-8 text-sm text-muted-foreground">No findings yet.</p>
+      )}
+      {run.state !== "running" && !run.findings.length && (
         <div className="rounded-lg border p-8 text-center">
           <CheckCircle2 className="mx-auto mb-3 size-6 text-muted-foreground" aria-hidden="true" />
           <p className="font-medium">No findings in tested scope</p>

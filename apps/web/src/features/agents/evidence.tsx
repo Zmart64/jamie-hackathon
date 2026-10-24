@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Agent, Assessment, Finding } from "./model";
 import type { Selection } from "./canvas";
+import { DemoEvidence } from "./demo-evidence";
 
 export function EvidencePanel({
   agent,
@@ -14,11 +15,13 @@ export function EvidencePanel({
   busy,
 }: {
   agent: Agent;
-  run: Assessment;
+  run: Assessment | undefined;
   selection: Selection;
   onRetest: (id: string) => void;
   busy: boolean;
 }) {
+  if (!run) return null;
+  if (run.demo) return <DemoEvidence run={run} selection={selection} />;
   const finding = run.findings.find((item) => item.id === selection.findingId);
   return (
     <Card className="min-w-0 gap-4 self-start shadow-none" aria-label="Evidence details">
@@ -77,6 +80,7 @@ function FindingEvidence({
     finding: finding.title,
     gap: "Gap",
     blocked: "Blocked",
+    sharedNotes: "Report notes",
   };
   return (
     <>

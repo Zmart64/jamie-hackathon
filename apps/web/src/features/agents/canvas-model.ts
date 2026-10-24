@@ -3,20 +3,40 @@ import type { Assessment, Finding } from "./model";
 
 export type Selection = {
   kind:
-    "baseline" | "surface" | "plan" | "attempt" | "verification" | "finding" | "gap" | "blocked";
+    | "baseline"
+    | "surface"
+    | "plan"
+    | "attempt"
+    | "verification"
+    | "finding"
+    | "gap"
+    | "blocked"
+    | "sharedNotes";
   findingId?: string;
+  stepId?: string;
 };
 export type FlowNodeData = {
   label: string;
   description: string;
-  meta: string;
+  durationMs: number;
   status:
-    "Passed" | "Mapped" | "Complete" | "Recorded" | "Verified" | "High" | "Medium" | "Incomplete";
+    | "Passed"
+    | "Mapped"
+    | "Complete"
+    | "Recorded"
+    | "Verified"
+    | "High"
+    | "Medium"
+    | "Incomplete"
+    | "Running"
+    | "Blocked"
+    | "Detected";
   selection: Selection;
   expandable?: boolean;
   expanded?: boolean;
+  elapsedMs?: number;
 };
-export type AssessmentFlowNode = Node<FlowNodeData, "assessment">;
+export type AssessmentFlowNode = Node<FlowNodeData, "assessment" | "demo">;
 export type AssessmentGraph = { nodes: AssessmentFlowNode[]; edges: Edge[] };
 
 const column = 300;
@@ -47,26 +67,26 @@ function edge(source: string, target: string, label?: string, incomplete = false
     style: { strokeDasharray: incomplete ? "4 5" : undefined },
   };
 }
-function foundation(y: number, run: Assessment): AssessmentFlowNode[] {
+function foundation(y: number): AssessmentFlowNode[] {
   return [
     node("baseline", 0, y, {
       label: "Connection & baseline",
       description: "Ordinary task completed",
-      meta: "Connection check",
+      durationMs: 800,
       status: "Passed",
       selection: { kind: "baseline" },
     }),
     node("surface", column, y, {
       label: "Attack surface",
       description: "Inputs, tools & permissions",
-      meta: "Capabilities discovered",
+      durationMs: 2200,
       status: "Mapped",
       selection: { kind: "surface" },
     }),
     node("plan", column * 2, y, {
       label: "Test planning",
       description: "Scenarios & evidence rules",
-      meta: `${run.tests} attempts`,
+      durationMs: 700,
       status: "Complete",
       selection: { kind: "plan" },
     }),
@@ -79,7 +99,7 @@ function findingPath(finding: Finding, index: number, expanded: boolean): Assess
     node(id, column * 3, y, {
       label: finding.scenario,
       description: finding.surface,
-      meta: "Confirmed finding",
+      durationMs: 1200,
       status: finding.severity,
       selection: { kind: "finding", findingId: id },
       expandable: true,
@@ -92,21 +112,21 @@ function findingPath(finding: Finding, index: number, expanded: boolean): Assess
       node(`${id}-attempt`, column * 4, y, {
         label: "Attack attempt",
         description: "Adversarial input submitted",
-        meta: "Recorded input",
+        durationMs: 700,
         status: "Recorded",
         selection: { kind: "attempt", findingId: id },
       }),
       node(`${id}-verification`, column * 5, y, {
         label: "Verification",
         description: "Action + observed evidence",
-        meta: "Outcome checked",
+        durationMs: 400,
         status: "Verified",
         selection: { kind: "verification", findingId: id },
       }),
       node(`${id}-finding`, column * 6, y, {
         label: "Confirmed finding",
         description: finding.title,
-        meta: "Review evidence",
+        durationMs: 100,
         status: finding.severity,
         selection: { kind: "finding", findingId: id },
       }),
@@ -131,7 +151,7 @@ export function buildAssessmentGraph(run: Assessment, expanded: string[]): Asses
       node("blocked", column * 3, nextRow++ * row, {
         label: `${run.blocked} attempts blocked`,
         description: "Boundaries held in tested attempts",
-        meta: "Tested scope",
+        durationMs: 3200,
         status: "Passed",
         selection: { kind: "blocked" },
       }),
@@ -143,7 +163,7 @@ export function buildAssessmentGraph(run: Assessment, expanded: string[]): Asses
       node("gap", column * 3, nextRow++ * row, {
         label: `${run.inconclusive} inconclusive ${run.inconclusive === 1 ? "attempt" : "attempts"}`,
         description: "Retrieval unavailable",
-        meta: "Needs investigation",
+        durationMs: 1500,
         status: "Incomplete",
         selection: { kind: "gap" },
       }),
@@ -151,7 +171,7 @@ export function buildAssessmentGraph(run: Assessment, expanded: string[]): Asses
     edges.push(edge("plan", "gap", "Incomplete", true));
   }
   return {
-    nodes: [...foundation((Math.max(0, nextRow - 1) * row) / 2, run), ...nodes],
+    nodes: [...foundation((Math.max(0, nextRow - 1) * row) / 2), ...nodes],
     edges: [edge("baseline", "surface"), edge("surface", "plan"), ...edges],
   };
 }

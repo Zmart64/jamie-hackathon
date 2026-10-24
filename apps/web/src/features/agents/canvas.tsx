@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   Background,
   BackgroundVariant,
@@ -15,6 +15,10 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CanvasActions, CanvasNode } from "./canvas-node";
 import { buildAssessmentGraph, type Selection } from "./canvas-model";
+import { buildDemoGraph } from "./demo-graph";
+import { DemoCanvasNode } from "./demo-node";
+import { CanvasFollow } from "./canvas-follow";
+import { CanvasDetails } from "./canvas-details";
 import type { Assessment } from "./model";
 import "@xyflow/react/dist/style.css";
 import "./canvas.css";
@@ -22,7 +26,7 @@ import "./canvas.css";
 export { FindingsList } from "./findings-list";
 export type { Selection } from "./canvas-model";
 
-const nodeTypes = { assessment: CanvasNode };
+const nodeTypes = { assessment: CanvasNode, demo: DemoCanvasNode };
 const fitOptions: FitViewOptions = {
   padding: { top: "40px", right: "40px", bottom: "130px", left: "40px" },
   minZoom: 0.15,
@@ -30,9 +34,10 @@ const fitOptions: FitViewOptions = {
 };
 
 type CanvasProps = {
-  run: Assessment;
+  run: Assessment | undefined;
   selection: Selection;
   onSelect: (selection: Selection) => void;
+  details?: { content: ReactNode; onClose: () => void } | undefined;
 };
 
 export function AssessmentCanvas(props: CanvasProps) {
@@ -42,12 +47,20 @@ export function AssessmentCanvas(props: CanvasProps) {
     </ReactFlowProvider>
   );
 }
-function CanvasStage({ run, selection, onSelect }: CanvasProps) {
+function CanvasStage({ run, selection, onSelect, details }: CanvasProps) {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [pan, setPan] = useState(true);
+  const [following, setFollowing] = useState(true);
   const mobile = useIsMobile();
   const { getViewport, setViewport } = useReactFlow();
-  const graph = useMemo(() => buildAssessmentGraph(run, expanded), [run, expanded]);
+  const graph = useMemo(() => {
+    if (!run) return { nodes: [], edges: [] };
+    return run.demo ? buildDemoGraph(run.demo.elapsedMs) : buildAssessmentGraph(run, expanded);
+  }, [run, expanded]);
+  const focus = graph.nodes
+    .filter((node) => node.data.status === "Running")
+    .map((node) => node.id)
+    .join(",");
   function onExpand(id: string) {
     setExpanded((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
@@ -64,6 +77,7 @@ function CanvasStage({ run, selection, onSelect }: CanvasProps) {
     const delta = movement[event.key];
     if (!delta) return;
     event.preventDefault();
+    setFollowing(false);
     const viewport = getViewport();
     void setViewport({ ...viewport, x: viewport.x + delta[0], y: viewport.y + delta[1] });
   }
@@ -73,62 +87,88 @@ function CanvasStage({ run, selection, onSelect }: CanvasProps) {
       className="min-w-0 overflow-hidden rounded-xl border bg-card"
     >
       <div className="border-b px-4 py-3 text-sm font-medium">Assessment map</div>
-      <div className="assessment-flow h-[560px] min-w-0 sm:h-[600px]">
-        <CanvasActions.Provider value={{ selection, onSelect, onExpand }}>
-          <ReactFlow
-            nodes={graph.nodes}
-            edges={graph.edges}
-            nodeTypes={nodeTypes}
-            fitView={!mobile}
-            fitViewOptions={fitOptions}
-            defaultViewport={{
-              x: 24,
-              y: 100 - (graph.nodes[0]?.position.y ?? 0) * 0.85,
-              zoom: 0.85,
-            }}
-            minZoom={0.15}
-            maxZoom={1.6}
-            nodesDraggable={false}
-            nodesConnectable={false}
-            nodesFocusable={false}
-            edgesFocusable={false}
-            elementsSelectable={false}
-            deleteKeyCode={null}
-            panOnDrag={pan}
-            zoomOnDoubleClick={false}
-            zoomOnScroll={false}
-            preventScrolling={false}
-            onKeyDown={onKeyDown}
-            tabIndex={0}
-            role="region"
-            aria-label="Assessment canvas. Use arrow keys to pan."
-          >
-            <Background
-              variant={BackgroundVariant.Dots}
-              gap={24}
-              size={1}
-              color="hsl(var(--border))"
-            />
-            <Panel
-              position="top-left"
-              className="pointer-events-none! text-[11px] text-muted-foreground"
+      <div
+        className="relative flex h-[560px] min-w-0 sm:h-[600px]"
+        onKeyDown={(event) => {
+          if (
+            event.key === "Escape" &&
+            !event.defaultPrevented &&
+            event.currentTarget.contains(event.target as Node)
+          ) {
+            event.preventDefault();
+            details?.onClose();
+          }
+        }}
+      >
+        <div className="assessment-flow h-full min-w-0 flex-1">
+          <CanvasActions.Provider value={{ selection, onSelect, onExpand }}>
+            <ReactFlow
+              nodes={graph.nodes}
+              edges={graph.edges}
+              nodeTypes={nodeTypes}
+              fitView={!mobile && !run?.demo}
+              fitViewOptions={fitOptions}
+              defaultViewport={{
+                x: 24,
+                y: 100 - (graph.nodes[0]?.position.y ?? 0) * 0.85,
+                zoom: 0.85,
+              }}
+              minZoom={0.15}
+              maxZoom={1.6}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              nodesFocusable={false}
+              edgesFocusable={false}
+              elementsSelectable={false}
+              deleteKeyCode={null}
+              panOnDrag={pan}
+              zoomOnDoubleClick={false}
+              zoomOnScroll={false}
+              preventScrolling={false}
+              onKeyDown={onKeyDown}
+              onMoveStart={(event) => {
+                if (event) setFollowing(false);
+              }}
+              tabIndex={0}
+              role="region"
+              aria-label="Assessment canvas. Use arrow keys to pan."
             >
-              Drag to pan · Select a step to inspect
-            </Panel>
-            <CanvasControls pan={pan} onPanChange={setPan} />
-            <MiniMap
-              pannable
-              zoomable
-              ariaLabel="Assessment minimap"
-              className="hidden overflow-hidden rounded-lg border shadow-sm sm:block"
-              style={{ width: 150, height: 100, bottom: 18 }}
-              nodeColor="hsl(var(--muted-foreground) / 0.25)"
-              bgColor="hsl(var(--card))"
-              maskColor="hsl(var(--muted) / 0.7)"
-              maskStrokeColor="hsl(var(--border))"
-            />
-          </ReactFlow>
-        </CanvasActions.Provider>
+              {run?.demo && (
+                <CanvasFollow
+                  stage={
+                    run.state === "complete"
+                      ? "direct-result,impersonation-result,recovery-result,consolidate,result,report-notes"
+                      : focus
+                  }
+                  enabled={following && !details}
+                />
+              )}
+              <Background
+                variant={BackgroundVariant.Dots}
+                gap={24}
+                size={1}
+                color="hsl(var(--border))"
+              />
+              <CanvasControls
+                pan={pan}
+                onPanChange={setPan}
+                onInteract={() => setFollowing(false)}
+              />
+              <MiniMap
+                pannable
+                zoomable
+                ariaLabel="Assessment minimap"
+                className="hidden overflow-hidden rounded-lg border shadow-sm sm:block"
+                style={{ width: 150, height: 100, bottom: 18 }}
+                nodeColor="hsl(var(--muted-foreground) / 0.25)"
+                bgColor="hsl(var(--card))"
+                maskColor="hsl(var(--muted) / 0.7)"
+                maskStrokeColor="hsl(var(--border))"
+              />
+            </ReactFlow>
+          </CanvasActions.Provider>
+        </div>
+        {details && <CanvasDetails onClose={details.onClose}>{details.content}</CanvasDetails>}
       </div>
     </section>
   );
@@ -136,9 +176,11 @@ function CanvasStage({ run, selection, onSelect }: CanvasProps) {
 function CanvasControls({
   pan,
   onPanChange,
+  onInteract,
 }: {
   pan: boolean;
   onPanChange: (pan: boolean) => void;
+  onInteract: () => void;
 }) {
   const { zoomIn, zoomOut, zoomTo, fitView } = useReactFlow();
   const { zoom } = useViewport();
@@ -147,6 +189,8 @@ function CanvasControls({
       position="bottom-left"
       className="flex items-center gap-0.5 rounded-lg border bg-card p-1 shadow-sm"
       aria-label="Canvas controls"
+      onPointerDown={onInteract}
+      onKeyDown={onInteract}
     >
       <Button
         variant={pan ? "ghost" : "secondary"}

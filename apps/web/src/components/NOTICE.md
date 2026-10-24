@@ -28,6 +28,12 @@ Its attribution remains visible in the canvas. Node cards and controls compose t
 existing shadcn primitives; the reference screenshot is visual guidance only.
 The narrow declaration-only compatibility patch is documented in `../../DESIGN.md`.
 
+At the user's request, browser steps and previews use the Google Chrome logo from
+[Google's Chrome website](https://www.google.com/chrome/static/images/chrome-logo-m100.svg),
+saved unchanged as `public/brand/google-chrome.svg` on October 24, 2026. This brand
+asset is a specific exception to the Lucide-only icon convention; Google retains
+its rights to the logo. The rest of the interface continues to use Lucide icons.
+
 The upstream shadcn MIT license follows:
 
 MIT License
