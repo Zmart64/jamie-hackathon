@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type RefObject, type SubmitEvent } from "react";
-import { ArrowUp, ArrowUpRight, SquarePen } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Sparkles, SquarePen } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -304,6 +304,7 @@ export function SupportChat({ active, topic, openRequest }: SupportChatProps) {
         <Input
           ref={inputRef}
           id="sprout-message"
+          aria-describedby="sprout-ai-disclosure"
           placeholder="Type your message…"
           value={draft}
           maxLength={2000}
@@ -328,6 +329,13 @@ export function SupportChat({ active, topic, openRequest }: SupportChatProps) {
           </Button>
         )}
       </form>
+      <span
+        id="sprout-ai-disclosure"
+        className="mt-1 flex shrink-0 items-center justify-end gap-1.5 text-[11px] leading-4 text-foreground/75"
+      >
+        <Sparkles className="size-3 shrink-0" aria-hidden="true" />
+        AI support assistant
+      </span>
     </div>
   );
 }
