@@ -8,7 +8,7 @@ import {
   type BotAvatarPose,
 } from "bot-avatars";
 
-export type SproutMood = "idle" | "greeting" | "thinking" | "replying";
+export type SproutMood = "idle" | "greeting" | "thinking" | "replying" | "sleeping";
 
 // Separate, original outlines share the library's pose so every part stays attached.
 const bodyOutline = "M50 24C26 23 7 39 7 59C6 79 24 89 50 89C76 89 94 79 93 59C93 39 74 23 50 24Z";
@@ -77,9 +77,9 @@ export function createSproutRenderer(
   if (!bodyLayer || !detailLayer) return null;
   const layers = [detailLayer, bodyLayer];
   const sim = new BotAvatarSim(0.35);
-  sim.setTurn(0.45);
+  sim.setTurn(compact ? 0.65 : 0.45);
   sim.setJump({
-    height: 18,
+    height: compact ? 12 : 18,
     spin: 0,
     every: 12,
     squash: 1.45,
@@ -96,13 +96,9 @@ export function createSproutRenderer(
   let firstPaint = true;
 
   function paint() {
-    const still = compact || motion.matches;
+    const still = motion.matches;
+    // Use the library's complete pose for both idle and working states.
     const pose = still ? restPose(sim.state) : { ...sim.pose };
-    if (mood === "thinking") {
-      pose.pitch = 0.16;
-      pose.roll = -0.1;
-      pose.lookY = -0.4;
-    }
     for (const layer of layers) paintLayer(layer, size, pose, still || firstPaint);
     firstPaint = false;
   }
@@ -112,7 +108,7 @@ export function createSproutRenderer(
     if (disposed) return;
     const dt = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 0;
     lastTime = time;
-    sim.update(dt * 1.3);
+    sim.update(dt);
     paint();
     frame = window.requestAnimationFrame(animate);
   }
@@ -123,11 +119,13 @@ export function createSproutRenderer(
     lastTime = 0;
     if (disposed || document.hidden || !visible) return;
     paint();
-    if (!compact && !motion.matches) frame = window.requestAnimationFrame(animate);
+    if (!motion.matches) {
+      frame = window.requestAnimationFrame(animate);
+    }
   }
 
   function followPointer(event: PointerEvent) {
-    if (compact || motion.matches) return;
+    if (motion.matches || mood === "sleeping") return;
     const bounds = body.getBoundingClientRect();
     const x = (event.clientX - bounds.left - bounds.width / 2) / size;
     const y = (event.clientY - bounds.top - bounds.height / 2 - BOT_AVATAR_RISE * size) / size;
@@ -144,14 +142,16 @@ export function createSproutRenderer(
   motion.addEventListener("change", refresh);
   document.addEventListener("visibilitychange", refresh);
   window.addEventListener("resize", refresh);
-  if (!compact) window.addEventListener("pointermove", followPointer, { passive: true });
+  window.addEventListener("pointermove", followPointer, { passive: true });
   refresh();
 
   return {
     setMood(next: SproutMood) {
       if (mood === next) return;
       mood = next;
-      sim.setState(next === "replying" ? "working" : "default");
+      const state = next === "replying" || next === "thinking" ? "working" : "default";
+      sim.setState(next === "sleeping" ? "sleeping" : state);
+      if (next === "sleeping") sim.setPointer(0, 0, 0);
       if (next === "greeting" && !motion.matches) sim.poke();
       refresh();
     },

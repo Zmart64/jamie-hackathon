@@ -8,21 +8,19 @@ export type HelpTopic = "welcome" | "offer" | "password" | "email";
 
 export function LoginHelper({ topic }: { topic: HelpTopic }) {
   const [open, setOpen] = useState(topic !== "welcome");
-  const [greeting, setGreeting] = useState(topic !== "welcome");
-  const [streaming, setStreaming] = useState(false);
   const launcherRef = useRef<HTMLButtonElement>(null);
-  const mood = greeting ? "greeting" : streaming && open ? "replying" : "idle";
+  const restoreFocus = useRef(false);
 
   useEffect(() => {
-    if (!greeting) return;
-    const timer = window.setTimeout(() => setGreeting(false), 950);
-    return () => window.clearTimeout(timer);
-  }, [greeting]);
+    if (!open && restoreFocus.current) {
+      launcherRef.current?.focus();
+      restoreFocus.current = false;
+    }
+  }, [open]);
 
   function close() {
     setOpen(false);
-    setGreeting(false);
-    launcherRef.current?.focus();
+    restoreFocus.current = true;
   }
 
   return (
@@ -40,32 +38,26 @@ export function LoginHelper({ topic }: { topic: HelpTopic }) {
         <Button
           type="button"
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           className="helper-dismiss"
           aria-label="Dismiss helper"
           onClick={close}
         >
           <X aria-hidden="true" />
         </Button>
-        <SupportChat active={open} onStreamingChange={setStreaming} />
+        <SupportChat active={open} />
       </section>
       <Button
         ref={launcherRef}
         variant="ghost"
         className="helper-launcher"
-        aria-label={open ? "Minimize Sprout" : "Open Sprout"}
+        hidden={open}
+        aria-label="Open Sprout"
         aria-expanded={open}
         aria-controls="helper-panel"
-        onClick={() => {
-          if (open) {
-            close();
-            return;
-          }
-          setOpen(true);
-          setGreeting(true);
-        }}
+        onClick={() => setOpen(true)}
       >
-        <Sprout mood={mood} />
+        {!open && <Sprout />}
       </Button>
     </aside>
   );

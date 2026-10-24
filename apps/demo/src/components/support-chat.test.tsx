@@ -15,12 +15,12 @@ describe("Sprout chat", () => {
       expect(screen.queryByText(hello)).not.toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: "Open Sprout" }));
       const history = screen.getByRole("log");
-      await act(() => vi.advanceTimersByTimeAsync(160));
+      await act(() => vi.advanceTimersByTimeAsync(480));
       expect(history).toHaveTextContent("Hi, I’m");
       expect(screen.queryByText(hello)).not.toBeInTheDocument();
       expect(screen.queryByText(help)).not.toBeInTheDocument();
       const partial = history.textContent;
-      fireEvent.click(screen.getByRole("button", { name: "Minimize Sprout" }));
+      fireEvent.click(screen.getByRole("button", { name: "Dismiss helper" }));
       await act(() => vi.advanceTimersByTimeAsync(5000));
       expect(history.textContent).toBe(partial);
       fireEvent.click(screen.getByRole("button", { name: "Open Sprout" }));
@@ -28,7 +28,7 @@ describe("Sprout chat", () => {
       expect(screen.getAllByText(hello)).toHaveLength(1);
       expect(screen.getAllByText(help)).toHaveLength(1);
       expect(screen.queryByRole("heading")).not.toBeInTheDocument();
-      expect(screen.getAllByText("Sprout")).toHaveLength(2);
+      expect(screen.getAllByText("Sprout")).toHaveLength(1);
       expect(history.querySelector('[aria-busy="true"]')).not.toBeInTheDocument();
     } finally {
       unmount();
@@ -54,7 +54,7 @@ describe("Sprout chat", () => {
       const history = screen.getByRole("log").textContent;
       await act(() => vi.advanceTimersByTimeAsync(10000));
       expect(screen.getByRole("log").textContent).toBe(history);
-      expect(screen.getAllByText("Sprout")).toHaveLength(2);
+      expect(screen.getAllByText("Sprout")).toHaveLength(1);
       expect(screen.queryByRole("status")).not.toBeInTheDocument();
       expect(composer).not.toHaveAttribute("readonly");
     } finally {

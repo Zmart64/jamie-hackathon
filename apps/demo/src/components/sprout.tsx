@@ -13,7 +13,7 @@ export function Sprout({
   const bodyRef = useRef<HTMLCanvasElement>(null);
   const detailsRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<ReturnType<typeof createSproutRenderer>>(null);
-  const size = compact ? 28 : 112;
+  const size = compact ? 32 : 112;
 
   useEffect(() => {
     const body = bodyRef.current;
