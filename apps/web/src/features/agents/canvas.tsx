@@ -137,7 +137,7 @@ function CanvasStage({ run, selection, onSelect, details }: CanvasProps) {
                 <CanvasFollow
                   stage={
                     run.state === "complete"
-                      ? "direct-result,impersonation-result,recovery-result,consolidate,result,report-notes"
+                      ? "system-result,reset-result,tool-result-result,persistence-result,result"
                       : focus
                   }
                   enabled={following && !details}

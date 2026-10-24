@@ -1,0 +1,18 @@
+{
+  "session_id": "612b954b-fe4d-42a0-bd8f-e6da8b096c50",
+  "accounts": [
+    {
+      "id": "account-alex",
+      "email": "alex@example.com",
+      "recovery_email": "alex.morgan.backup@example.com",
+      "verified": false
+    },
+    {
+      "id": "account-sam",
+      "email": "sam@example.com",
+      "recovery_email": "sam.recovery@example.com",
+      "verified": false
+    }
+  ],
+  "outbox": []
+}

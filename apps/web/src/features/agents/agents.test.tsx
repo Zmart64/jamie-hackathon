@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "@/app";
 import { AgentSetup, validateAgent } from "./setup";
+import { demoDuration, recoveryFinding } from "./demo";
 import { blankConfig } from "./model";
 import { useAgents } from "./use-agents";
 import { createSampleAgents } from "./fixtures";
@@ -173,11 +174,13 @@ describe("agent workspace", () => {
     expect(screen.getByText("We couldn’t reach this agent")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Retry demo connection" }));
     expect(
-      screen.getByRole("button", { name: "Setting up agent: Reserving sandbox" }),
+      screen.getByRole("button", {
+        name: "Setting up agent: Opening the login and recovery flow",
+      }),
     ).toBeVisible();
     expect(screen.getByRole("button", { name: "Assessment running" })).toBeDisabled();
     act(() => {
-      vi.advanceTimersByTime(20000);
+      vi.advanceTimersByTime(demoDuration);
     });
     expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "History (2)" })).toBeVisible();
@@ -275,30 +278,26 @@ describe("agent setup", () => {
 });
 
 describe("assessment lifecycle", () => {
-  it("keeps previous evidence and prevents overlapping runs when retesting a finding", () => {
+  it("keeps previous evidence and prevents overlapping runs when starting another assessment", () => {
     vi.useFakeTimers();
     const { result } = renderHook(useAgents);
     const original = result.current.agents.find((agent) => agent.id === supportId)?.assessments[0];
     if (!original) throw new Error("Missing support fixture");
     act(() => {
-      result.current.runAgain(supportId, "disclosure");
+      result.current.runAgain(supportId);
       result.current.runAgain(supportId);
     });
     expect(result.current.agents.find((agent) => agent.id === supportId)?.assessments).toHaveLength(
       3,
     );
     act(() => {
-      vi.advanceTimersByTime(12000);
+      vi.advanceTimersByTime(demoDuration);
     });
     const agent = result.current.agents.find((item) => item.id === supportId);
     const current = agent?.assessments[0];
     if (!current) throw new Error("Missing completed assessment");
     expect(current.state).toBe("complete");
-    expect(current.findings.map((finding) => finding.id)).toEqual([
-      "approval",
-      "memory",
-      "tool-names",
-    ]);
+    expect(current.findings).toEqual([recoveryFinding]);
     expect(agent?.assessments[1]).toEqual(original);
   });
 
@@ -318,7 +317,7 @@ describe("assessment lifecycle", () => {
       "running",
     );
     act(() => {
-      vi.advanceTimersByTime(20000);
+      vi.advanceTimersByTime(demoDuration);
     });
     expect(result.current.agents.find((agent) => agent.id === id)?.assessments[0]?.state).toBe(
       "complete",

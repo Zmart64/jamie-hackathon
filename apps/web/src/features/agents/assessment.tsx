@@ -19,8 +19,8 @@ export function AgentAssessment({ agent, store }: { agent: Agent; store: AgentSt
   const [view, setView] = useState<AssessmentView>("canvas");
   const run = agent.assessments.find((item) => item.id === selectedId) ?? agent.assessments[0];
   const busy = agent.assessments[0]?.state === "running";
-  function start(fixedId?: string) {
-    store.runAgain(agent.id, fixedId);
+  function start() {
+    store.runAgain(agent.id);
     setSelectedId("");
     setTab("assessment");
     setView("canvas");
@@ -228,7 +228,7 @@ function AssessmentExplorer({
           }
         />
       ) : (
-        <div className="grid min-w-0 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_320px]">
           <FindingsList run={run} selection={findingsSelection} onSelect={setSelection} />
           {showFindingsEvidence(run, selection) && evidence}
         </div>

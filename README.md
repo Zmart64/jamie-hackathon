@@ -48,10 +48,11 @@ Our platform for adding agents to the pipeline and reviewing their
 security assessments. It includes an agent inventory, assessment canvas,
 findings and evidence views.
 
-Its Carbon Zero walkthrough follows surface discovery, direct verification
-bypass, support impersonation, and recovery manipulation. The canvas brings
-attack paths, browser traces, and findings together so reviewers can follow an
-assessment from the first probe to the recommended fix.
+Its Carbon Zero walkthrough uses the recorded `demo-real-run-01` pipeline output.
+Four concurrent canvas branches show system-context injection, a recovery reset
+check, tool-result injection, and a persistence check. Original conversations,
+tool receipts, account state, the message board, and browser footage support one
+consolidated recovery-verification finding. Every new assessment replays this run.
 
 The platform code can be found here:[`apps/web`](apps/web).
 

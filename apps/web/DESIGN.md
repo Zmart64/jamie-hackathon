@@ -109,7 +109,7 @@ Canvas node icons use Wrench for setup/baseline, Radar for attack surface,
 Brain for planning, Crosshair for attack attempts, ShieldCheck for verification,
 ShieldBan for blocked paths, ShieldAlert for findings, and CircleHelp for coverage
 gaps. Browser steps and preview headers use the Google Chrome logo. Final report
-notes use NotepadText; consolidation uses Brain.
+notes use NotepadText. Each verification card becomes its outcome in place.
 
 The Agents workspace composes the existing shadcn primitives with the official
 Breadcrumb, Dialog, Progress, and Textarea components, added through the pinned shadcn CLI
@@ -123,24 +123,41 @@ The demo includes six sample agents and these interactions:
 - One add-agent modal with a name, connection method, and URL (email address for
   Mail). Browser is preselected; API endpoint and Mail are also available.
 - Add creates an untested agent with History (0), an empty assessment map, and
-  empty Findings. Run assessment starts a deterministic 20-second Carbon Zero
-  story for every name, connection method and address. No entered address is contacted.
-- New runs reveal setup (0–3s), mapping (3–8s), planning (8–10s), three staggered
-  browser tests (10–17s), and a verification step after every trace (15–18s).
-  Separate outcome nodes confirm two blocked attempts and one recovery change
-  (16–18.5s). All three outcomes feed into consolidation (18.5–19.5s), followed
-  by a finding and report notes (19.5–20s). Blocked counts only update after their
-  outcomes finish; blocked attempts are not findings. Selecting verification or
-  outcome nodes shows the matching scripted tool/account-state evidence. Final
-  notes cover the tested scope, controls that held, the finding, and follow-up.
-  Each run uses its own wall clock, catches up after background throttling, and
-  continues while navigating or inspecting a browser session.
-- Four local, silent browser clips play automatically, without media controls.
-  Expanding a preview opens a shadcn Dialog synchronized to the same assessment
-  clock. Completed clips hold their final frame. The footage uses the actual
-  Carbon Zero UI with scripted API responses; its recovery-change trace is a
-  matching fixture, not a live security result. Asset provenance is in
-  `public/demo/carbon-zero/README.md`.
+  empty Findings. Run assessment starts the same 24.5-second Carbon Zero playback
+  for every input. No entered address is contacted.
+- The source is `output/demo/real-run/demo-real-run-01`. All four session JSON
+  files and state snapshots are bundled in `src/features/agents/recording` along
+  with the original timeline, board, tool log, and incomplete attacker-message
+  index. Session JSON is authoritative; the index omits the first injection.
+- The canvas starts with Setting up agent (0–1s), then restores the original
+  prerecorded mapping walkthrough (1–6s). Its preview is stacked above the mapping
+  card, as before. This introductory clip uses scripted responses; it has no
+  session transcript.
+- Four concurrent branches each play their entire footage over 15 seconds:
+  S1 system-context injection (6–21s), S2 reset check (6.5–21.5s), S3 tool-result
+  injection (7–22s), and S4 persistence (7.5–22.5s). Browser playback rates adapt
+  to each original clip’s duration; no footage is cut. Source timestamps remain
+  unchanged in the evidence. The source conversations ran sequentially;
+  concurrent branches are a presentation choice.
+- Each branch has one verification/outcome card. It verifies for one second,
+  then changes its label, icon, and status to the outcome. All four cards connect
+  directly to a single centered Create findings node (23.5–24.5s), which ends the
+  pipeline. The two successful injections and S4 persistence probe
+  support the same recovery-verification flaw. Two refused change requests are
+  counted separately; 18 assessed turns include discovery and diagnostic requests
+  and must not be interpreted as 18 exploit attempts.
+- Every session exposes its complete messages, tool calls with arguments/results
+  and errors, and final state. Messages appear at their source time; final state
+  appears after the branch clip. Create findings includes the shared board, timeline,
+  tool log, and assessment notes. Notes explain per-session fixture resets, the board’s erroneous
+  cross-session inference, the 300-second budget stop without a finish call,
+  and the final restore receipt after the video ends.
+- Four local silent clips are cropped from the source recording for legible
+  chat text. Preview and expanded clip follow the same assessment clock and
+  hold their last frame. Expanded views show only the session title and video,
+  with a close button. Video failure leaves the transcript and tool evidence
+  usable. Asset provenance and
+  reproduction instructions are in `public/demo/assessment/README.md`.
 - A left-to-right assessment canvas with compact shadcn node cards, smooth branching
   connectors, pan/zoom controls, fit-to-view, and a minimap. Finding branches expand
   into attack, verification, and finding steps. Selecting a node opens evidence in
@@ -149,12 +166,12 @@ The demo includes six sample agents and these interactions:
   page navigation remain usable; Close and Escape return focus to the selected
   node. Blocked and inconclusive paths always remain visible.
   The Carbon Zero camera follows new steps until manual pan/zoom, ending on the
-  consolidation and its finding/report outputs. Reduced motion disables camera transitions and node animation.
+  verified outcomes and the final Create findings node. Reduced motion disables camera transitions and node animation.
   Mobile keeps the horizontal layout; previews expand to fit the screen.
 - Step-by-step recorded-attempt replay remains available on the older sample
   assessments. Previous assessments are opened through History.
-- Retesting older sample findings with a demo fix creates a new full assessment. The chosen finding
-  stops reproducing; other findings and previous evidence remain.
+- Starting an assessment from an older finding replays the same pipeline run.
+  There is no simulated-fix path; previous assessments remain in History.
 - Untested agents, a recoverable simulated connection failure, incomplete tests,
   and unknown permissions.
 

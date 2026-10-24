@@ -18,7 +18,7 @@ export function EvidencePanel({
   agent: Agent;
   run: Assessment | undefined;
   selection: Selection;
-  onRetest: (id: string) => void;
+  onRetest: () => void;
   busy: boolean;
 }) {
   if (!run) return null;
@@ -39,7 +39,7 @@ export function EvidencePanel({
             key={`${finding.id}-${selection.kind}`}
             finding={finding}
             kind={selection.kind}
-            onRetest={() => onRetest(finding.id)}
+            onRetest={onRetest}
             busy={busy}
           />
         ) : (
@@ -151,12 +151,11 @@ function FindingEvidence({
       <div className="grid gap-2">
         <Button onClick={onRetest} disabled={busy}>
           <RotateCcw aria-hidden="true" />
-          Retest with demo fix
+          Run assessment
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        Retesting simulates this fix in a new full assessment. Other findings remain; the original
-        evidence is preserved.
+        Start a new assessment. Previous evidence remains available in History.
       </p>
     </>
   );

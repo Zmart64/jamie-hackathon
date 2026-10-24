@@ -22,7 +22,7 @@ function syncVideo(video: HTMLVideoElement, id: BrowserFeedId, elapsed: number) 
   }
   video.playbackRate = Math.max(
     0.25,
-    Math.min(4, video.duration / ((feed.end - feed.start) / 1000)),
+    Math.min(16, video.duration / ((feed.end - feed.start) / 1000)),
   );
   if (video.paused) return video.play();
 }
@@ -40,8 +40,8 @@ export function BrowserVideo({ id, elapsedMs }: { id: BrowserFeedId; elapsedMs: 
     <span className="relative block aspect-[752/532] overflow-hidden bg-muted">
       <video
         ref={video}
-        src={`/demo/carbon-zero/${id}.webm`}
-        poster={`/demo/carbon-zero/${id}.png`}
+        src={`/demo/assessment/${id}.webm`}
+        poster={`/demo/assessment/${id}.png`}
         muted
         playsInline
         preload="auto"
@@ -96,7 +96,7 @@ export function BrowserFeed({ id, elapsedMs }: { id: BrowserFeedId; elapsedMs: n
         <DialogHeader className="pr-8 text-left">
           <DialogTitle className="text-base">{feed.title}</DialogTitle>
         </DialogHeader>
-        <div className="overflow-hidden rounded-lg border [&>span]:max-h-[min(70dvh,calc(100dvh-11rem))]">
+        <div className="overflow-hidden rounded-lg border [&>span]:max-h-[min(65dvh,calc(100dvh-10rem))]">
           <BrowserVideo id={id} elapsedMs={elapsedMs} />
         </div>
       </DialogContent>

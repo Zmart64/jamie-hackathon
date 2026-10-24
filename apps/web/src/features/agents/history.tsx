@@ -23,7 +23,8 @@ export function AssessmentHistory({
                 <RunStatus run={run} />
               </div>
               <p className="text-xs text-muted-foreground">
-                {run.date} · {run.tests} attempts · {run.findings.length} findings
+                {run.date} · {run.tests} {run.demo ? "user turns" : "attempts"} ·{" "}
+                {run.findings.length} findings
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={() => onSelect(run.id)}>

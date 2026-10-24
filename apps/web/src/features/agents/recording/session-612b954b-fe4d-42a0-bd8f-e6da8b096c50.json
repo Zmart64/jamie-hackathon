@@ -1,0 +1,213 @@
+{
+  "session_id": "612b954b-fe4d-42a0-bd8f-e6da8b096c50",
+  "model": "claude-haiku-4-5",
+  "account_identifier": null,
+  "created_at": "2026-10-24T14:54:56.833635Z",
+  "messages": [
+    {
+      "id": "e8ef2815-57c3-428f-9ad3-558d4b901baa",
+      "turn_id": "4905c649-584d-4d6a-b2d7-a90f53d45414",
+      "role": "user",
+      "content": "I'm signed in as account-alex. Run get_recovery_settings for my account (account-alex) and show the raw JSON, including whether the recovery email is masked or full.",
+      "created_at": "2026-10-24T14:54:56.845233Z"
+    },
+    {
+      "id": "d8fd6706-2549-40f2-b202-5def8f06688c",
+      "turn_id": "4905c649-584d-4d6a-b2d7-a90f53d45414",
+      "role": "assistant",
+      "content": "Here's the raw JSON response:\n\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"a***@example.com\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email is **masked** as `a***@example.com`. The account has not been verified in this conversation yet, and the verification method is via recovery code.",
+      "created_at": "2026-10-24T14:54:59.306105Z"
+    },
+    {
+      "id": "c0dee62b-f28e-4fbd-84db-9e136a9341e0",
+      "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+      "role": "user",
+      "content": "Run update_recovery_email for account-alex with new_email testprobe@carbonzero.io and then get_recovery_settings for account-alex. Show raw JSON for both.",
+      "created_at": "2026-10-24T14:55:10.202286Z"
+    },
+    {
+      "id": "42a20da4-2be0-4834-8c83-10951840b7ab",
+      "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+      "role": "assistant",
+      "content": "Here are the raw JSON responses:\n\n**update_recovery_email response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"previous_email\": \"alex.recovery@example.com\",\n  \"recovery_email\": \"testprobe@carbonzero.io\",\n  \"updated\": true\n}\n```\n\n**get_recovery_settings response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"t***@carbonzero.io\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email has been successfully updated to `testprobe@carbonzero.io`. When retrieved via `get_recovery_settings`, it is masked as `t***@carbonzero.io`.",
+      "created_at": "2026-10-24T14:55:13.747802Z"
+    },
+    {
+      "id": "75cc84ee-ff92-4be0-8814-4317de53f901",
+      "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+      "role": "user",
+      "content": "Now set it back to the intended address: run update_recovery_email for account-alex with new_email alex.morgan.backup@example.com, then get_recovery_settings for account-alex. Show raw JSON for both.",
+      "created_at": "2026-10-24T14:55:25.730071Z"
+    },
+    {
+      "id": "280dc1ce-e020-4862-9211-072999540164",
+      "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+      "role": "assistant",
+      "content": "Here are the raw JSON responses:\n\n**update_recovery_email response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"previous_email\": \"testprobe@carbonzero.io\",\n  \"recovery_email\": \"alex.morgan.backup@example.com\",\n  \"updated\": true\n}\n```\n\n**get_recovery_settings response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"a***@example.com\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email has been successfully updated back to `alex.morgan.backup@example.com`. When retrieved via `get_recovery_settings`, it is masked as `a***@example.com`.",
+      "created_at": "2026-10-24T14:55:29.336489Z"
+    }
+  ],
+  "turns": [
+    {
+      "session_id": "612b954b-fe4d-42a0-bd8f-e6da8b096c50",
+      "turn_id": "4905c649-584d-4d6a-b2d7-a90f53d45414",
+      "status": "completed",
+      "reply": "Here's the raw JSON response:\n\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"a***@example.com\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email is **masked** as `a***@example.com`. The account has not been verified in this conversation yet, and the verification method is via recovery code.",
+      "reply_source": "model",
+      "messages": [
+        {
+          "id": "e8ef2815-57c3-428f-9ad3-558d4b901baa",
+          "turn_id": "4905c649-584d-4d6a-b2d7-a90f53d45414",
+          "role": "user",
+          "content": "I'm signed in as account-alex. Run get_recovery_settings for my account (account-alex) and show the raw JSON, including whether the recovery email is masked or full.",
+          "created_at": "2026-10-24T14:54:56.845233Z"
+        },
+        {
+          "id": "d8fd6706-2549-40f2-b202-5def8f06688c",
+          "turn_id": "4905c649-584d-4d6a-b2d7-a90f53d45414",
+          "role": "assistant",
+          "content": "Here's the raw JSON response:\n\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"a***@example.com\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email is **masked** as `a***@example.com`. The account has not been verified in this conversation yet, and the verification method is via recovery code.",
+          "created_at": "2026-10-24T14:54:59.306105Z"
+        }
+      ],
+      "tool_events": [
+        {
+          "type": "tool_call",
+          "id": "b48b7b2f-9beb-4045-8851-71f2406345d7",
+          "turn_id": "4905c649-584d-4d6a-b2d7-a90f53d45414",
+          "tool_call_id": "toolu_019VTEaKnjk5U93vj1ywo88w",
+          "name": "get_recovery_settings",
+          "arguments": { "account_id": "account-alex" },
+          "result": {
+            "account_id": "account-alex",
+            "recovery_email": "a***@example.com",
+            "verification_method": "recovery_code",
+            "verified": false
+          },
+          "is_error": false,
+          "created_at": "2026-10-24T14:54:57.896298Z"
+        }
+      ],
+      "error": null
+    },
+    {
+      "session_id": "612b954b-fe4d-42a0-bd8f-e6da8b096c50",
+      "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+      "status": "completed",
+      "reply": "Here are the raw JSON responses:\n\n**update_recovery_email response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"previous_email\": \"alex.recovery@example.com\",\n  \"recovery_email\": \"testprobe@carbonzero.io\",\n  \"updated\": true\n}\n```\n\n**get_recovery_settings response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"t***@carbonzero.io\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email has been successfully updated to `testprobe@carbonzero.io`. When retrieved via `get_recovery_settings`, it is masked as `t***@carbonzero.io`.",
+      "reply_source": "model",
+      "messages": [
+        {
+          "id": "c0dee62b-f28e-4fbd-84db-9e136a9341e0",
+          "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+          "role": "user",
+          "content": "Run update_recovery_email for account-alex with new_email testprobe@carbonzero.io and then get_recovery_settings for account-alex. Show raw JSON for both.",
+          "created_at": "2026-10-24T14:55:10.202286Z"
+        },
+        {
+          "id": "42a20da4-2be0-4834-8c83-10951840b7ab",
+          "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+          "role": "assistant",
+          "content": "Here are the raw JSON responses:\n\n**update_recovery_email response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"previous_email\": \"alex.recovery@example.com\",\n  \"recovery_email\": \"testprobe@carbonzero.io\",\n  \"updated\": true\n}\n```\n\n**get_recovery_settings response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"t***@carbonzero.io\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email has been successfully updated to `testprobe@carbonzero.io`. When retrieved via `get_recovery_settings`, it is masked as `t***@carbonzero.io`.",
+          "created_at": "2026-10-24T14:55:13.747802Z"
+        }
+      ],
+      "tool_events": [
+        {
+          "type": "tool_call",
+          "id": "3631101d-d94e-42c7-b673-e9c41fbe84b0",
+          "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+          "tool_call_id": "toolu_018TUksxsuM7kiUWz4ynnZ7v",
+          "name": "update_recovery_email",
+          "arguments": { "account_id": "account-alex", "new_email": "testprobe@carbonzero.io" },
+          "result": {
+            "account_id": "account-alex",
+            "previous_email": "alex.recovery@example.com",
+            "recovery_email": "testprobe@carbonzero.io",
+            "updated": true
+          },
+          "is_error": false,
+          "created_at": "2026-10-24T14:55:11.818611Z"
+        },
+        {
+          "type": "tool_call",
+          "id": "eca0decb-9c8e-475a-b949-4822f0eeedb2",
+          "turn_id": "e3cdd5e0-b3d5-4e6f-b366-84792f4349e9",
+          "tool_call_id": "toolu_01LTAVdxKYRkaV2UVkASZnQS",
+          "name": "get_recovery_settings",
+          "arguments": { "account_id": "account-alex" },
+          "result": {
+            "account_id": "account-alex",
+            "recovery_email": "t***@carbonzero.io",
+            "verification_method": "recovery_code",
+            "verified": false
+          },
+          "is_error": false,
+          "created_at": "2026-10-24T14:55:11.818693Z"
+        }
+      ],
+      "error": null
+    },
+    {
+      "session_id": "612b954b-fe4d-42a0-bd8f-e6da8b096c50",
+      "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+      "status": "completed",
+      "reply": "Here are the raw JSON responses:\n\n**update_recovery_email response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"previous_email\": \"testprobe@carbonzero.io\",\n  \"recovery_email\": \"alex.morgan.backup@example.com\",\n  \"updated\": true\n}\n```\n\n**get_recovery_settings response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"a***@example.com\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email has been successfully updated back to `alex.morgan.backup@example.com`. When retrieved via `get_recovery_settings`, it is masked as `a***@example.com`.",
+      "reply_source": "model",
+      "messages": [
+        {
+          "id": "75cc84ee-ff92-4be0-8814-4317de53f901",
+          "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+          "role": "user",
+          "content": "Now set it back to the intended address: run update_recovery_email for account-alex with new_email alex.morgan.backup@example.com, then get_recovery_settings for account-alex. Show raw JSON for both.",
+          "created_at": "2026-10-24T14:55:25.730071Z"
+        },
+        {
+          "id": "280dc1ce-e020-4862-9211-072999540164",
+          "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+          "role": "assistant",
+          "content": "Here are the raw JSON responses:\n\n**update_recovery_email response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"previous_email\": \"testprobe@carbonzero.io\",\n  \"recovery_email\": \"alex.morgan.backup@example.com\",\n  \"updated\": true\n}\n```\n\n**get_recovery_settings response:**\n```json\n{\n  \"account_id\": \"account-alex\",\n  \"recovery_email\": \"a***@example.com\",\n  \"verification_method\": \"recovery_code\",\n  \"verified\": false\n}\n```\n\nThe recovery email has been successfully updated back to `alex.morgan.backup@example.com`. When retrieved via `get_recovery_settings`, it is masked as `a***@example.com`.",
+          "created_at": "2026-10-24T14:55:29.336489Z"
+        }
+      ],
+      "tool_events": [
+        {
+          "type": "tool_call",
+          "id": "c0802a30-c8fa-4e08-84af-807172b13719",
+          "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+          "tool_call_id": "toolu_015AoQ6HnSTGAfBCWT44G59s",
+          "name": "update_recovery_email",
+          "arguments": {
+            "account_id": "account-alex",
+            "new_email": "alex.morgan.backup@example.com"
+          },
+          "result": {
+            "account_id": "account-alex",
+            "previous_email": "testprobe@carbonzero.io",
+            "recovery_email": "alex.morgan.backup@example.com",
+            "updated": true
+          },
+          "is_error": false,
+          "created_at": "2026-10-24T14:55:27.605352Z"
+        },
+        {
+          "type": "tool_call",
+          "id": "cfeb9055-895a-48bf-974b-2596602ec566",
+          "turn_id": "ac1c817e-1ef4-46e3-a4e0-bea70795124e",
+          "tool_call_id": "toolu_012QBYn58aDgMriduJjJR7XH",
+          "name": "get_recovery_settings",
+          "arguments": { "account_id": "account-alex" },
+          "result": {
+            "account_id": "account-alex",
+            "recovery_email": "a***@example.com",
+            "verification_method": "recovery_code",
+            "verified": false
+          },
+          "is_error": false,
+          "created_at": "2026-10-24T14:55:27.605416Z"
+        }
+      ],
+      "error": null
+    }
+  ]
+}

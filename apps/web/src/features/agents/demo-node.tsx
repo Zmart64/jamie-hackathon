@@ -75,7 +75,7 @@ function DemoStepCard({
           }
         }}
       >
-        <CanvasNodeIcon kind={step.kind} browser={Boolean(step.feed)} />
+        <CanvasNodeIcon kind={data.selection.kind} browser={Boolean(step.feed)} />
         <span className="line-clamp-2 min-w-0 text-sm leading-5 font-medium whitespace-normal">
           {data.label}
         </span>

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { getNodesBounds, getViewportForBounds, useReactFlow, useStore } from "@xyflow/react";
+import { demoDuration } from "./demo";
 import { buildDemoGraph } from "./demo-graph";
 
 // Follow stage transitions, never every clock tick. Manual navigation takes precedence.
@@ -10,7 +11,9 @@ export function CanvasFollow({ stage, enabled }: { stage: string; enabled: boole
   useEffect(() => {
     if (!enabled || !viewportInitialized || !width || !height) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const nodes = buildDemoGraph(20_000).nodes.filter((node) => stage.split(",").includes(node.id));
+    const nodes = buildDemoGraph(demoDuration).nodes.filter((node) =>
+      stage.split(",").includes(node.id),
+    );
     if (!nodes.length) return;
     const viewport = getViewportForBounds(
       getNodesBounds(nodes),
