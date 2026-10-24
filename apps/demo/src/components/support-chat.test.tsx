@@ -11,6 +11,23 @@ const hello = "Hi, I’m Sprout, your Carbon Zero agent.";
 const help = "Ask me anything, or pick a question below.";
 
 describe("Sprout chat", () => {
+  it.each(["welcome", "offer", "password", "email"] as const)(
+    "discloses AI immediately when opened from %s, before the greeting or any request",
+    (topic) => {
+      const fetchMock = mockSupport();
+      render(<LoginHelper topic={topic} />);
+      if (topic === "welcome") {
+        fireEvent.click(screen.getByRole("button", { name: "Open Sprout" }));
+      }
+      expect(screen.getByText("AI support assistant")).toBeVisible();
+      expect(screen.getByRole("textbox", { name: "Message Sprout" })).toHaveAccessibleDescription(
+        "AI support assistant",
+      );
+      expect(screen.queryByText(hello)).not.toBeInTheDocument();
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+
   it("streams two welcome bubbles in order, pauses while minimized, and resumes without duplication", async () => {
     vi.useFakeTimers();
     const { unmount } = render(<LoginHelper topic="welcome" />);
@@ -29,6 +46,7 @@ describe("Sprout chat", () => {
       expect(history.textContent).toBe(partial);
       fireEvent.click(screen.getByRole("button", { name: "Open Sprout" }));
       await act(() => vi.advanceTimersByTimeAsync(5000));
+      expect(screen.getByText("AI support assistant")).toBeVisible();
       expect(screen.getAllByText(hello)).toHaveLength(1);
       expect(screen.getAllByText(help)).toHaveLength(1);
       expect(screen.queryByRole("heading")).not.toBeInTheDocument();
@@ -57,6 +75,7 @@ describe("Sprout chat", () => {
     expect(screen.getAllByText("How can I help?")).toHaveLength(1);
     await user.type(composer, "My password is incorrect{Enter}");
     expect(await screen.findByText("Let’s check your account.")).toBeVisible();
+    expect(screen.getByText("AI support assistant")).toBeVisible();
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
