@@ -1,0 +1,6 @@
+.env
+board.md
+models-store.json
+.playwright/
+.pi/agent/
+runs/
