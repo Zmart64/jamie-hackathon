@@ -2,14 +2,17 @@ import { createContext, useContext } from "react";
 import { Handle, Position, useReactFlow, type NodeProps } from "@xyflow/react";
 import {
   CheckCircle2,
+  Brain,
   ChevronRight,
   CircleHelp,
-  FileInput,
-  Fingerprint,
-  GitBranch,
+  Crosshair,
+  LoaderCircle,
+  NotepadText,
+  Radar,
   ShieldAlert,
+  ShieldBan,
   ShieldCheck,
-  Waypoints,
+  Wrench,
 } from "lucide-react";
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
@@ -30,15 +33,35 @@ export const CanvasActions = createContext<{
 }>({ selection: { kind: "baseline" }, onSelect: () => {}, onExpand: () => {} });
 
 const icons = {
-  baseline: Waypoints,
-  surface: GitBranch,
-  plan: Fingerprint,
-  attempt: FileInput,
+  baseline: Wrench,
+  surface: Radar,
+  plan: Brain,
+  attempt: Crosshair,
   verification: ShieldCheck,
   finding: ShieldAlert,
-  blocked: ShieldCheck,
+  blocked: ShieldBan,
   gap: CircleHelp,
+  sharedNotes: NotepadText,
 };
+
+export function CanvasNodeIcon({
+  kind,
+  browser = false,
+}: {
+  kind: keyof typeof icons;
+  browser?: boolean;
+}) {
+  const Icon = icons[kind];
+  return (
+    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border">
+      {browser ? (
+        <img src="/brand/google-chrome.svg" alt="" className="size-5" aria-hidden="true" />
+      ) : (
+        <Icon className="size-4" aria-hidden="true" />
+      )}
+    </span>
+  );
+}
 
 export function CanvasNode({
   data,
@@ -47,7 +70,6 @@ export function CanvasNode({
 }: NodeProps<AssessmentFlowNode>) {
   const { selection, onSelect, onExpand } = useContext(CanvasActions);
   const { setCenter, getZoom } = useReactFlow();
-  const Icon = icons[data.selection.kind];
   const active =
     selection.kind === data.selection.kind && selection.findingId === data.selection.findingId;
   return (
@@ -72,27 +94,18 @@ export function CanvasNode({
             });
           }
         }}
-        className="nodrag h-[66px] w-full justify-start gap-2.5 rounded-b-none px-3 text-left"
+        className={cn(
+          "nodrag h-[66px] w-full justify-start gap-2.5 rounded-b-none px-3 text-left",
+          data.expandable && "pr-9",
+        )}
       >
-        <span
-          className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-lg border",
-            data.selection.kind === "baseline" && "border-foreground bg-foreground text-background",
-          )}
-        >
-          <Icon className="size-4" aria-hidden="true" />
-        </span>
-        <span className="min-w-0">
-          <span className="block truncate text-sm font-medium">{data.label}</span>
-          <span
-            className="mt-0.5 block truncate text-xs font-normal text-muted-foreground"
-            title={data.description}
-          >
-            {data.description}
-          </span>
+        <CanvasNodeIcon kind={data.selection.kind} />
+        <span className="line-clamp-2 min-w-0 text-sm leading-5 font-medium whitespace-normal">
+          {data.label}
         </span>
       </Button>
-      <CanvasNodeFooter data={data} onExpand={onExpand} />
+      <CanvasNodeFooter data={data} />
+      <CanvasNodeExpand data={data} onExpand={onExpand} />
       {(["baseline", "surface", "plan", "attempt", "verification"].includes(data.selection.kind) ||
         data.expandable) && (
         <Handle type="source" position={Position.Right} isConnectable={false} />
@@ -101,7 +114,7 @@ export function CanvasNode({
   );
 }
 
-function CanvasNodeFooter({
+function CanvasNodeExpand({
   data,
   onExpand,
 }: {
@@ -109,31 +122,37 @@ function CanvasNodeFooter({
   onExpand: (id: string) => void;
 }) {
   return (
-    <div className="flex h-9 items-center justify-between gap-2 border-t px-3 text-[10px]">
-      <span className="truncate text-muted-foreground">{data.meta}</span>
-      <div className="flex shrink-0 items-center gap-1">
-        <NodeStatus status={data.status} />
-        {data.expandable && data.selection.findingId && (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="nodrag size-6 rounded-md"
-            aria-label={`${data.expanded ? "Collapse" : "Expand"} ${data.label}`}
-            aria-expanded={Boolean(data.expanded)}
-            onClick={() => onExpand(data.selection.findingId ?? "")}
-          >
-            <ChevronRight
-              className={cn("size-3", data.expanded && "rotate-180")}
-              aria-hidden="true"
-            />
-          </Button>
-        )}
-      </div>
+    <div className="pointer-events-none absolute top-5 right-2 flex h-6 items-center">
+      {data.expandable && data.selection.findingId && (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="nodrag pointer-events-auto size-6 rounded-md"
+          aria-label={`${data.expanded ? "Collapse" : "Expand"} ${data.label}`}
+          aria-expanded={Boolean(data.expanded)}
+          onClick={() => onExpand(data.selection.findingId ?? "")}
+        >
+          <ChevronRight
+            className={cn("size-3", data.expanded && "rotate-180")}
+            aria-hidden="true"
+          />
+        </Button>
+      )}
     </div>
   );
 }
-function NodeStatus({ status }: { status: FlowNodeData["status"] }) {
-  const severity = status === "High" || status === "Medium";
+export function CanvasNodeFooter({ data }: { data: FlowNodeData }) {
+  return (
+    <div className="flex h-9 items-center justify-between gap-2 border-t border-border/60 px-3">
+      <span className="text-xs text-muted-foreground tabular-nums">
+        {(data.durationMs / 1000).toFixed(1)}s
+      </span>
+      <NodeStatus status={data.status} />
+    </div>
+  );
+}
+export function NodeStatus({ status }: { status: FlowNodeData["status"] }) {
+  const severity = status === "High" || status === "Medium" || status === "Detected";
   const StatusIcon = status === "Incomplete" ? CircleHelp : CheckCircle2;
   return (
     <Badge
@@ -141,11 +160,18 @@ function NodeStatus({ status }: { status: FlowNodeData["status"] }) {
       className={cn(
         "rounded-md px-1.5 py-0 text-[10px] font-normal",
         severity && "border-destructive/20 bg-destructive/5 text-destructive",
-        status === "Passed" && "border-success/20 bg-success/5 text-success",
+        (status === "Passed" || status === "Blocked") &&
+          "border-success/20 bg-success/5 text-success",
         status === "Incomplete" && "border-dashed",
       )}
     >
-      {severity ? <ShieldAlert aria-hidden="true" /> : <StatusIcon aria-hidden="true" />}
+      {status === "Running" ? (
+        <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
+      ) : severity ? (
+        <ShieldAlert aria-hidden="true" />
+      ) : (
+        <StatusIcon aria-hidden="true" />
+      )}
       {status}
     </Badge>
   );

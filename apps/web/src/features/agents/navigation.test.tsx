@@ -68,7 +68,13 @@ describe("agent navigation", () => {
     await screen.findByRole("heading", { name: "New helper", level: 1 });
     const path = window.location.pathname;
     expect(path).toMatch(agentPath);
-    expect(screen.getByText("Ready for its first assessment")).toBeVisible();
+    expect(screen.getByText("Assessment map")).toBeVisible();
+    expect(screen.getByRole("tab", { name: "History (0)" })).toBeVisible();
+    expect(document.querySelectorAll(".react-flow__node")).toHaveLength(0);
+    expect(screen.queryByText("Ready for its first assessment")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Findings" }));
+    expect(screen.getByText("No findings yet.")).toBeVisible();
+    expect(screen.queryByLabelText("Evidence details")).not.toBeInTheDocument();
     await user.click(screen.getByRole("link", { name: "Strain home" }));
     expect(window.location.pathname).toBe("/");
     expect(await screen.findByRole("link", { name: "New helper" })).toBeVisible();
