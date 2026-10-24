@@ -1,0 +1,32 @@
+.assessment-flow {
+  --xy-background-color: hsl(var(--background));
+  --xy-edge-stroke: hsl(var(--muted-foreground) / 0.45);
+  --xy-edge-stroke-width: 1;
+  --xy-edge-label-color: hsl(var(--muted-foreground));
+  --xy-edge-label-background-color: hsl(var(--card));
+  --xy-handle-background-color: hsl(var(--foreground));
+  --xy-handle-border-color: hsl(var(--card));
+  --xy-attribution-background-color: hsl(var(--card) / 0.8);
+}
+.assessment-flow .react-flow__handle {
+  width: 5px;
+  height: 5px;
+  min-width: 5px;
+  min-height: 5px;
+  border-width: 1px;
+}
+.assessment-flow .react-flow__edge-text {
+  font-family: inherit;
+  font-size: 10px;
+}
+.assessment-flow .react-flow__edge-textbg {
+  stroke: hsl(var(--border));
+  stroke-width: 0.5;
+}
+.assessment-flow .react-flow__attribution a {
+  color: hsl(var(--muted-foreground));
+}
+.assessment-flow .react-flow:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -2px;
+}

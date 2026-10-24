@@ -8,10 +8,27 @@ in `../../DESIGN.md`. This is a Vite integration, not an unchanged Next.js examp
 
 The theme provider follows the [official Vite dark-mode guide](https://ui.shadcn.com/docs/dark-mode/vite).
 The Avatar component was added from the official registry on October 23, 2026.
-`public/avatars/demo.jpg` is the [shadcn demo avatar](https://ui.shadcn.com/avatars/shadcn.jpg),
-bundled locally as a placeholder rather than a real account photo.
+`public/avatars/justus.png` is the user-provided penguin image used for the demo account.
 
-The upstream MIT license follows:
+Breadcrumb, Dialog, Progress, and Textarea were added from the official `@shadcn` registry
+on October 24, 2026 with the pinned shadcn CLI. The shadcn MCP provided registry
+discovery, usage examples, install commands, and the audit checklist. Progress
+additionally forwards its numeric value to the Radix root for accessibility.
+
+The Evolve/cobalt identity and IBM Plex typography were selected on October 24, 2026. `src/brand.css` provides the palette. The Button and Badge integrations use
+semantic primary-hover and destructive-foreground tokens so light and dark
+foreground colors stay paired. Logos in `public/brand` use IBM Plex Sans Bold
+outlines. IBM Plex fonts are licensed under SIL OFL 1.1; licenses are bundled in
+`public/fonts`, with pinned sources and checksums in `brand/fonts/SOURCES.json`
+at the repository root. Brand usage is documented in `brand/README.md`.
+
+The assessment canvas uses [React Flow](https://github.com/xyflow/xyflow),
+`@xyflow/react` 12.11.6, under its MIT license (Copyright © 2019–present webkid GmbH).
+Its attribution remains visible in the canvas. Node cards and controls compose the
+existing shadcn primitives; the reference screenshot is visual guidance only.
+The narrow declaration-only compatibility patch is documented in `../../DESIGN.md`.
+
+The upstream shadcn MIT license follows:
 
 MIT License
 

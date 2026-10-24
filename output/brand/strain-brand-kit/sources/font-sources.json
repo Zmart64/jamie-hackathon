@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/google/fonts",
+  "commit": "0b58fb370093f9a9f4ff785d94405710b79de67c",
+  "commitDate": "2026-03-03",
+  "files": {
+    "IBMPlexSans-Variable.ttf": {
+      "source": "https://raw.githubusercontent.com/google/fonts/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/ibmplexsans/IBMPlexSans%5Bwdth%2Cwght%5D.ttf",
+      "sha256": "3b031aa4216174205bd8471f88a49b91f093169e9e87bd5262242bc5967fe2e3"
+    },
+    "IBMPlexSans-Italic-Variable.ttf": {
+      "source": "https://raw.githubusercontent.com/google/fonts/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/ibmplexsans/IBMPlexSans-Italic%5Bwdth%2Cwght%5D.ttf",
+      "sha256": "0b94c5e981993764db32bf9c610ecc60cbd34ad77ec2f10ba03c64ab75124d8e"
+    },
+    "IBMPlexMono-Regular.ttf": {
+      "source": "https://raw.githubusercontent.com/google/fonts/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/ibmplexmono/IBMPlexMono-Regular.ttf",
+      "sha256": "6a3412f058c7d8dfd9170c41e85ade48e5156ecb89356110ca57a0a27734af46"
+    },
+    "IBMPlexMono-Medium.ttf": {
+      "source": "https://raw.githubusercontent.com/google/fonts/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/ibmplexmono/IBMPlexMono-Medium.ttf",
+      "sha256": "a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755"
+    },
+    "OFL-IBM-Plex-Sans.txt": {
+      "source": "https://raw.githubusercontent.com/google/fonts/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/ibmplexsans/OFL.txt",
+      "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da"
+    },
+    "OFL-IBM-Plex-Mono.txt": {
+      "source": "https://raw.githubusercontent.com/google/fonts/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/ibmplexmono/OFL.txt",
+      "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da"
+    }
+  }
+}
