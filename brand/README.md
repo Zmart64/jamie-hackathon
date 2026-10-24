@@ -1,78 +1,142 @@
 # Strain brand system
 
-Strain uses the Evolve wordmark, cobalt and Zinc colors, IBM Plex Sans for
-headings and interface text, and IBM Plex Mono for code and trace identifiers.
-The A and I in STRAIN carry the brand accent. This identity was selected on
-October 24, 2026.
+Strain uses the skewed Point S mark in Bone & Ink with a photoelastic core, IBM
+Plex Sans for headings, interface text and the wordmark, and IBM Plex Mono for
+code and trace identifiers. This identity was selected on October 24, 2026 and
+replaces the earlier Evolve/cobalt identity.
+
+## Story
+
+Clear materials such as acrylic show their internal stress as bands of color
+under polarized light; this is photoelasticity. A part can look flawless to the
+eye while the fringes show exactly where it will fail. Strain does the same for
+AI agents: it puts them under adversarial load and shows where they give way.
+
+- **Three layers.** An agent is a stack: instructions in, model reasoning in the
+  middle, tools and actions out. The thin caps are the edges; the heavy core is
+  where load concentrates.
+- **Color only in the core.** Pressure shows where attacks land. The caps stay
+  ink because they are the parts you already see and control.
+- **One shear.** Every slab is cut at the same 14° angle, the moment before
+  layers slip. The mark is still holding, but visibly under load. The angle is a
+  design constant, not a physical one.
+- **Point symmetry.** Rotated 180°, the mark is unchanged: attacker and defender
+  see the same structure. It is also the S, built from layers, not from a font.
+- **Restraint.** The interface is ink, white and neutral grey. Color appears only
+  where something matters: stress in the mark, and severity in findings.
+
+Short forms: "Clear plastic shows its stress as color under polarized light.
+Strain does the same for AI agents." Taglines: "Stress-tested agents.", "See the
+strain before it breaks.", "Crash-testing for AI agents."
 
 ## Files to use
 
-- Production logos and monograms: [`apps/web/public/brand`](../apps/web/public/brand).
+- Production marks, lockups and icons: [`apps/web/public/brand`](../apps/web/public/brand).
+- Asset generator (SVG, PNG, ICO):
+  [`scripts/generate_brand_assets.py`](../scripts/generate_brand_assets.py).
+- Lockup letter outlines used by the generator: [`wordmark-outlines.svg`](wordmark-outlines.svg).
 - Editable text source: [`wordmark-editable.svg`](wordmark-editable.svg).
-- Geometry and sizing: [`design-spec.json`](design-spec.json).
+- Geometry, palette and severity values: [`design-spec.json`](design-spec.json).
 - Font source files, licenses, and pinned checksums: [`fonts`](fonts).
 - Canonical frontend colors and font declarations:
   [`apps/web/src/brand.css`](../apps/web/src/brand.css).
 - Tailwind aliases: [`apps/web/src/styles.css`](../apps/web/src/styles.css).
 - Exported palette snapshot: [`palette.json`](palette.json).
-- Complete handoff: [`strain-brand-kit.zip`](../output/brand/strain-brand-kit.zip).
-- Illustrated guide: [`strain-brand-guide.pdf`](../output/pdf/strain-brand-guide.pdf).
 
-The ZIP contains outlined SVGs, transparent PNGs at 1200px and 2400px widths,
-an editable SVG, standalone monograms, app icons, ICO and Apple touch icons,
-a 1200 x 630 social card, desktop/web fonts with licenses, theme CSS, palette
-data, and the guide. Outlined SVGs need no installed font. Install the bundled
-IBM Plex Sans variable font before editing the text-based source.
+The ZIP kit and PDF guide under `output/` still show the retired cobalt identity
+and have not been regenerated.
 
-## Logo rules
+## The mark
 
-Use `wordmark-light.svg` on white or very light neutral surfaces. Use
-`wordmark-dark.svg` on charcoal surfaces; its AI accent is pale blue for contrast.
-Use the monochrome black, white, or cobalt version when the medium requires one
-color. The assets have transparent backgrounds except the app icons and social
-card. Do not recolor individual letters outside the supplied variants.
+Point S is three slabs sheared at 14°: a thin top cap flush right, a heavy
+full-width core and a thin bottom cap flush left. It is point-symmetric, so it
+reads the same rotated 180°.
 
-Keep at least half the capital-letter height clear on every side of the wordmark.
-Its small internal export padding is not a substitute for this clear space.
-Use the full wordmark at 120px wide or larger; use the AI monogram below that.
-Use the app icon at 24px or larger, with the supplied 16px favicon as a browser
-exception. Keep aspect ratio and letter spacing intact. Do not add shadows,
-gradients, strokes, rotation, or a different typeface.
+| File                    | Use                                                    |
+| ----------------------- | ------------------------------------------------------ |
+| `mark-ink.svg`          | Flat bare mark on light surfaces                       |
+| `mark-bone.svg`         | Flat bare mark on dark surfaces                        |
+| `mark-core-ink.svg`     | Square mark, photoelastic core; in-app on light (rail) |
+| `mark-core-bone.svg`    | Square mark, photoelastic core; in-app on dark (rail)  |
+| `favicon.svg`           | Flat ink tile; browser favicons at 16–48px             |
+| `app-icon.svg`          | Ink tile, photoelastic core; app and home-screen icons |
+| `app-icon-bone.svg`     | Bone tile, photoelastic core; light presentations      |
+| `app-icon-maskable.svg` | Square, mark inside the platform safe area             |
+| `wordmark-light.svg`    | Ink lockup with photoelastic core; light surfaces      |
+| `wordmark-dark.svg`     | Bone lockup with photoelastic core; dark surfaces      |
 
-The wordmark is built from IBM Plex Sans Bold at weight 700, normal width,
-with -24 font units of tracking on a 1000-unit em. Its source paths are actual
-font outlines. The earlier generated concept board was a direction study;
-these files are the production artwork.
+Do not edit these files by hand. Change the generator, then run
+`uv run python scripts/generate_brand_assets.py --rasters` (needs `rsvg-convert`
+and ImageMagick). A test fails if the committed SVGs drift from the generator.
 
-The rounded app icon suits web UI. The square maskable icon keeps its monogram
-inside the central safe area for platform cropping. Apple touch artwork is
-square so the platform supplies its own corners.
+The lockup letters are IBM Plex Sans Bold outlines in one solid color; do not
+recolor individual letters or put the gradient in them. Keep at least half the
+capital-letter height clear around the lockup. Use the lockup at 120px wide or
+larger and the mark below that. Do not add shadows, strokes, rotation or a
+different typeface.
+
+## Photoelastic core
+
+The photoelastic gradient is the only brand gradient: violet `#7C6CFF` → cyan
+`#3FD0E0` → lime `#E9F46A` → pink `#FF8FB1` → violet `#9B7BFF`, running along
+the slip direction. It is deliberately bright and stylized rather than a
+realistic fringe pattern. It appears on the core slab of the mark only, in the
+sidebar lockup, the compact sidebar mark, app icons from 32px, hero and social
+art. Inside the app the mark sits directly on the surface; tiles are for app and
+home-screen icons only. CSS uses the
+`--photoelastic` token in `brand.css`.
+
+Browser favicons, the bare marks and everyday UI stay flat. Never use the
+gradient on letters, buttons, badges, backgrounds or anything next to findings,
+so it cannot be confused with severity.
 
 ## Color roles
 
 | Role                        | Light     | Dark      |
 | --------------------------- | --------- | --------- |
-| Brand and primary actions   | `#2563EB` | `#93C5FD` |
-| Text on primary             | `#FFFFFF` | `#18181B` |
-| Primary hover               | `#1D4ED8` | `#BFDBFE` |
-| Page background             | `#FAFAFA` | `#09090B` |
-| Main text                   | `#18181B` | `#FAFAFA` |
-| Cards and popovers          | `#FFFFFF` | `#18181B` |
-| Muted surfaces              | `#F4F4F5` | `#27272A` |
-| Muted text                  | `#52525B` | `#A1A1AA` |
-| Selected or hovered surface | `#EFF6FF` | `#172554` |
-| Text on selected surface    | `#1E40AF` | `#DBEAFE` |
-| Structural border           | `#E4E4E7` | `#3F3F46` |
-| Input border                | `#71717A` | `#71717A` |
+| Page background and sidebar | `#FFFFFF` | `#0B0B0F` |
+| Main text                   | `#0B0B0F` | `#EDE8DC` |
+| Cards and popovers          | `#FFFFFF` | `#15151A` |
+| Primary actions             | `#0B0B0F` | `#EDE8DC` |
+| Text on primary             | `#EDE8DC` | `#0B0B0F` |
+| Primary hover               | `#2A2A31` | `#F7F4ED` |
+| Muted surfaces              | `#F4F4F6` | `#222228` |
+| Selected and hover surface  | `#EEEEF1` | `#26262D` |
+| Muted text                  | `#5A5A64` | `#A1A1AB` |
+| Structural border           | `#E6E6EA` | `#2E2E35` |
+| Input border                | `#7A7A86` | `#6E6E78` |
 
-Use red only for errors and destructive actions, yellow for warnings, green for
-success, and the info pair for informational status. Every status needs words
-or an icon as well as color. Chart colors are categorical roles, not a severity
-scale. Keep secondary UI surfaces neutral and reserve cobalt for emphasis.
+Light mode is white with ink and one family of cool neutral greys; the greys
+lean slightly toward ink's blue undertone. Do not use warm or beige greys for
+surfaces, borders or text. Bone is the brand's light tone: the mark on dark
+surfaces, text on primary buttons, and the dark theme's text. It is never a light
+page, sidebar or selection background. Dark mode keeps a slightly lighter sidebar
+(`#222228`) so it separates from the ink page.
 
-The primary button text contrasts are 5.17:1 in light mode and 9.82:1 in dark
-mode. All defined opaque text/surface pairs exceed 4.5:1. Opacity, focus rings,
-disabled states, and chart marks still need verification in their actual context.
+The interface has no brand hue, so severity is the color people notice. Use red
+only for errors and destructive actions, yellow for warnings, green for success,
+and the info pair for informational status. Every status needs words or an icon
+as well as color. Chart colors are categorical roles, not a severity scale.
+
+## Severity
+
+Findings use signal bars plus the level as a word, not pills:
+
+| Level  | Bars | Light     | Dark      |
+| ------ | ---- | --------- | --------- |
+| High   | 3    | `#C42B1F` | `#F26B5E` |
+| Medium | 2    | `#C9561A` | `#F0914A` |
+| Low    | 1    | `#A06B2E` | `#CFA36E` |
+
+Unfilled bars use the same color at low opacity. The bar icons meet 3:1
+against every light surface; the word beside them uses the normal text color.
+Use `SeverityIcon` and `SeverityLabel` from
+`apps/web/src/features/agents/severity.tsx`.
+
+Primary text contrast exceeds 16:1 in both themes, muted text exceeds 5.8:1 on
+every surface, and input borders exceed 3:1 on every surface they sit on.
+Opacity, focus rings, disabled states and chart marks still need checking in
+context.
 
 ## Typography and spacing
 
@@ -88,7 +152,7 @@ Keep UI tracking normal; the wordmark's optical spacing is specific to the logo.
 
 Use a 4px spacing unit with 8, 12, 16, 24, 32, 48, and 64px steps. The base corner
 radius is 8px. Keep the existing Lucide icon family at consistent stroke weights.
-The AI monogram is brand artwork, not a replacement for interface icons.
+The Point S mark is brand artwork, not a replacement for interface icons.
 
 ## Frontend implementation
 
@@ -96,14 +160,21 @@ The AI monogram is brand artwork, not a replacement for interface icons.
 and both theme palettes. `src/styles.css` imports it and provides semantic
 Tailwind utilities. Use `bg-primary text-primary-foreground`,
 `bg-accent text-accent-foreground`, and the matching status pairs. Do not put
-new hex values or raw Tailwind color families in components. Update the exported
-palette and kit when the canonical theme changes.
+new hex values or raw Tailwind color families in components. Update
+`palette.json` and `design-spec.json` when the canonical theme changes.
 
-The sidebar selects the light/dark SVG with the application's `.dark` class.
+Some literals cannot read CSS tokens and must be kept in sync by hand: the
+`theme-color` tags in `index.html` (`#FFFFFF` light, `#0B0B0F` dark) and the
+colors in `site.webmanifest` (`#0B0B0F`). The shadcn dialog and sheet backdrop
+uses the stock `bg-black/50` scrim.
+
+The sidebar selects the light/dark lockup with the application's `.dark` class.
 Its home link provides the accessible name, so the nested logo images have empty
 alt text. Elsewhere, give a standalone wordmark the alt text `Strain`.
 
-The favicon, touch icon, and manifest are already wired in `apps/web/index.html`.
+The favicon, touch icon, manifest and light/dark `theme-color` are wired in
+`apps/web/index.html`. PNG and ICO files are rendered from the SVGs by the
+asset generator.
 The manifest provides home-screen metadata; it does not add offline support.
 Fonts are served from `public/fonts` without external font requests.
 

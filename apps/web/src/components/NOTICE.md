@@ -15,7 +15,7 @@ on October 24, 2026 with the pinned shadcn CLI. The shadcn MCP provided registry
 discovery, usage examples, install commands, and the audit checklist. Progress
 additionally forwards its numeric value to the Radix root for accessibility.
 
-The Evolve/cobalt identity and IBM Plex typography were selected on October 24, 2026. `src/brand.css` provides the palette. The Button and Badge integrations use
+The Point S / Bone & Ink identity and IBM Plex typography were selected on October 24, 2026. `src/brand.css` provides the palette. The Button and Badge integrations use
 semantic primary-hover and destructive-foreground tokens so light and dark
 foreground colors stay paired. Logos in `public/brand` use IBM Plex Sans Bold
 outlines. IBM Plex fonts are licensed under SIL OFL 1.1; licenses are bundled in

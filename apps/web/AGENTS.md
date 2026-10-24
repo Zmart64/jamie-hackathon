@@ -5,10 +5,14 @@
 - Use only free, open-source components and blocks from the official shadcn
   registry. Do not add paid/PRO components or another UI kit. Compose UI controls
   from the shared shadcn components rather than hand-styling native controls.
-- Use the cobalt/Zinc semantic tokens and IBM Plex fonts in `src/brand.css`.
+- Use the Bone & Ink semantic tokens and IBM Plex fonts in `src/brand.css`.
   `src/styles.css` imports that source of truth and exposes Tailwind aliases
   wrapping HSL channels with `hsl()`. Do not invent colors in components.
-  Use the Evolve logo assets in `public/brand`; see `../../brand/README.md`.
+  Use the Point S mark and lockups in `public/brand`; see `../../brand/README.md`.
+  Regenerate them with `scripts/generate_brand_assets.py`, never by hand.
+  Show finding severity with `SeverityIcon`/`SeverityLabel` from
+  `src/features/agents/severity.tsx` (3/2/1 bars plus a word). It is the one
+  documented exception to Lucide-only icons, since Lucide has no level-filled bars.
 - `components.json` configures the official shadcn registry. Review generated
   code and pin dependencies. Keep source attribution in `src/components/NOTICE.md`.
 - Use standard component APIs and composition. Keep local integration changes

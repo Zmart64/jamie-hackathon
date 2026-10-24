@@ -294,7 +294,11 @@ describe("assessment lifecycle", () => {
     const current = agent?.assessments[0];
     if (!current) throw new Error("Missing completed assessment");
     expect(current.state).toBe("complete");
-    expect(current.findings.map((finding) => finding.id)).toEqual(["approval", "memory"]);
+    expect(current.findings.map((finding) => finding.id)).toEqual([
+      "approval",
+      "memory",
+      "tool-names",
+    ]);
     expect(agent?.assessments[1]).toEqual(original);
   });
 

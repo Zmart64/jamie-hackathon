@@ -32,16 +32,25 @@ export function AppSidebar() {
               className="justify-center text-base font-semibold md:justify-start"
             >
               <AppLink href="/" aria-label="Strain home">
-                <img src="/brand/app-icon.svg" alt="" className="size-8 md:hidden" />
+                <img
+                  src="/brand/mark-core-ink.svg"
+                  alt=""
+                  className="size-8 md:hidden dark:hidden"
+                />
+                <img
+                  src="/brand/mark-core-bone.svg"
+                  alt=""
+                  className="hidden size-8 dark:block md:dark:hidden"
+                />
                 <img
                   src="/brand/wordmark-light.svg"
                   alt=""
-                  className="hidden h-7 w-auto md:block dark:md:hidden"
+                  className="hidden h-6 w-auto md:block dark:md:hidden"
                 />
                 <img
                   src="/brand/wordmark-dark.svg"
                   alt=""
-                  className="hidden h-7 w-auto dark:md:block"
+                  className="hidden h-6 w-auto dark:md:block"
                 />
               </AppLink>
             </SidebarMenuButton>
