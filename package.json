@@ -6,7 +6,7 @@
     "node": ">=24.14.0 <25"
   },
   "scripts": {
-    "dev": "pnpm --filter @strain/web dev",
+    "dev": "pnpm --filter @strain/platform dev",
     "dev:demo": "pnpm --filter @strain/demo dev",
     "build": "pnpm -r build",
     "check": "make check",

@@ -69,7 +69,22 @@ def run_make(root: Path, target: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-@pytest.mark.parametrize("target", ["setup", "check", "test", "dev", "format", "security"])
+@pytest.mark.parametrize(
+    "target",
+    [
+        "setup",
+        "check",
+        "test",
+        "dev",
+        "format",
+        "security",
+        "dev-demo",
+        "support-agent",
+        "redteam-agent",
+        "redteam-agent-check",
+        "redteam-agent-rehearsal",
+    ],
+)
 def test_missing_mise_explains_how_to_start(checkout: Path, target: str) -> None:
     (checkout / "commands" / "mise").unlink()
     result = run_make(checkout, target)
@@ -87,6 +102,17 @@ def test_missing_mise_explains_how_to_start(checkout: Path, target: str) -> None
         ("check", "pnpm run typecheck"),
         ("test", "uv run --locked pytest"),
         ("dev", "pnpm run dev"),
+        ("dev-demo", "pnpm run dev:demo"),
+        ("support-agent", "uv run --locked support-agent"),
+        ("redteam-agent", "pnpm --filter @strain/redteam-agent start -- --mode browser"),
+        (
+            "redteam-agent-check",
+            "pnpm --filter @strain/redteam-agent start -- --mode browser --check",
+        ),
+        (
+            "redteam-agent-rehearsal",
+            "pnpm --filter @strain/redteam-agent start -- --mode rehearsal",
+        ),
         ("format", "pnpm run format"),
         ("security", "uv run --locked python scripts/check_secrets.py"),
     ],
@@ -130,6 +156,9 @@ def test_failed_tool_install_stops_setup(checkout: Path, monkeypatch: pytest.Mon
         ("check", "pnpm run lint"),
         ("test", "uv run --locked pytest"),
         ("dev", "pnpm run dev"),
+        ("dev-demo", "pnpm run dev:demo"),
+        ("support-agent", "uv run --locked support-agent"),
+        ("redteam-agent", "pnpm --filter @strain/redteam-agent start -- --mode browser"),
     ],
 )
 def test_command_failures_propagate(

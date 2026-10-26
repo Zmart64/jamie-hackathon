@@ -33,7 +33,7 @@ def test_gradient_stays_on_the_core_slab_and_off_small_icons() -> None:
 
 
 def test_css_token_uses_the_same_photoelastic_stops() -> None:
-    css = (ROOT / "apps" / "web" / "src" / "brand.css").read_text()
+    css = (ROOT / "apps" / "platform" / "src" / "brand.css").read_text()
     token = re.search(r"--photoelastic: linear-gradient\(([^;]+)\);", css)
     assert token is not None
     colors = re.findall(r"#[0-9a-fA-F]{6}", token.group(1))

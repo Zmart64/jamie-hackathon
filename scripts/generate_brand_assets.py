@@ -2,7 +2,7 @@
 
 Usage: uv run python scripts/generate_brand_assets.py [--rasters]
 
-SVGs are written to apps/web/public/brand. With --rasters, the PNG and ICO
+SVGs are written to apps/platform/public/brand. With --rasters, the PNG and ICO
 files are rendered too; that needs rsvg-convert and ImageMagick (magick).
 """
 
@@ -15,7 +15,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PUBLIC_DIR = ROOT / "apps" / "web" / "public"
+PUBLIC_DIR = ROOT / "apps" / "platform" / "public"
 BRAND_DIR = PUBLIC_DIR / "brand"
 OUTLINES = ROOT / "brand" / "wordmark-outlines.svg"
 

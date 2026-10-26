@@ -1,5 +1,5 @@
 {
-  "source": "../apps/web/src/brand.css",
+  "source": "../apps/platform/src/brand.css",
   "colors": {
     "light": {
       "background": "#FFFFFF",

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="apps/web/public/brand/app-icon.svg" alt="Strain Point S logo" width="96" height="96" />
+  <img src="apps/platform/public/brand/app-icon.svg" alt="Strain Point S logo" width="96" height="96" />
 </p>
 
 <h1 align="center">STRAIN</h1>
@@ -40,7 +40,10 @@ embedded support agent, for help recovering their account.
 Sprout (the support Agent) uses the **Anthropic Claude Agent SDK** with tools for account lookup,
 verification, recovery-address changes, and password resets.
 
-The demo login can be found here: [`apps/demo`](apps/demo), while docs can be found here: [Support agent documentation](apps/support-agent/README.md) and here: [Support API](apps/support-agent/API.md)
+Carbon Zero lives in [`apps/demo`](apps/demo/README.md): the login and chat UI are
+in `frontend/`, and the support API and agent are in `backend/`.
+See the [support agent documentation](apps/demo/backend/README.md) and
+[Support API](apps/demo/backend/API.md).
 
 ### 2. The STRAIN platform
 
@@ -54,7 +57,7 @@ check, tool-result injection, and a persistence check. Original conversations,
 tool receipts, account state, the message board, and browser footage support one
 consolidated recovery-verification finding. Every new assessment replays this run.
 
-The platform code can be found here:[`apps/web`](apps/web).
+The platform code can be found here: [`apps/platform`](apps/platform).
 
 ### 3. The red teaming agent pipeline
 
@@ -80,16 +83,15 @@ with it. The pipeline uses the Pi SDK and an Abliteration-hosted attacker model.
 
 <!-- Add an app-only screenshot of an actual live run here, with its run context. -->
 
-Source and setup: [`apps/redteam`](apps/redteam/README.md)
+Source and setup: [`apps/redteam-agent`](apps/redteam-agent/README.md)
 
 ## Repository map
 
 | Path                                                 | Role                                                                            |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [`apps/web`](apps/web)                               | Strain platform: React, TypeScript, Vite, Tailwind, shadcn/ui, and React Flow.  |
-| [`apps/demo`](apps/demo)                             | Carbon Zero login page and Sprout chat interface.                               |
-| [`apps/support-agent`](apps/support-agent/README.md) | Python support API, Claude agent, and isolated mock recovery tools.             |
-| [`apps/redteam`](apps/redteam/README.md)             | Current browser/rehearsal red-team harness using the Pi SDK and Playwright MCP. |
+| [`apps/platform`](apps/platform)                     | Strain platform: React, TypeScript, Vite, Tailwind, shadcn/ui, and React Flow.  |
+| [`apps/demo`](apps/demo/README.md)                   | Carbon Zero: React login/chat frontend and Python support-agent backend.        |
+| [`apps/redteam-agent`](apps/redteam-agent/README.md) | Current browser/rehearsal red-team harness using the Pi SDK and Playwright MCP. |
 | [`brand`](brand/README.md)                           | Current identity, design specifications, fonts, and asset provenance.           |
 | [`scripts`](scripts)                                 | Shared quality checks, security tooling, and brand asset generation.            |
 
@@ -101,11 +103,11 @@ Install Git, make, and [mise](https://mise.jdx.dev/getting-started.html), then r
 make setup
 ```
 
-Start the platform and demo agent with:
+Start the platform and Carbon Zero frontend in separate terminals:
 
 ```sh
-make dev       # Strain platform
-make dev-demo  # Carbon Zero login page
+make dev       # Strain platform, http://127.0.0.1:5173
+make dev-demo  # Carbon Zero frontend, http://127.0.0.1:5174
 ```
 
 ### Run the pipeline
@@ -113,17 +115,17 @@ make dev-demo  # Carbon Zero login page
 Create each service's configuration file if it does not already exist:
 
 ```sh
-cp apps/support-agent/.env.example apps/support-agent/.env
-cp apps/redteam/.env.example apps/redteam/.env
+cp apps/demo/backend/.env.example apps/demo/backend/.env
+cp apps/redteam-agent/.env.example apps/redteam-agent/.env
 ```
 
-Set `ANTHROPIC_API_KEY` in the support-agent file and `ABLITERATION_API_KEY` in the
-redteam file.
+Set `ANTHROPIC_API_KEY` in the demo backend file and `ABLITERATION_API_KEY` in the
+redteam-agent file.
 With Carbon Zero already running, start each command in its own terminal:
 
 ```sh
 make support-agent
-make redteam
+make redteam-agent
 ```
 
-Results are saved under `apps/redteam/runs/<run-id>/board.md`.
+Results are saved under `apps/redteam-agent/runs/<run-id>/board.md`.

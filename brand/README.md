@@ -31,7 +31,7 @@ strain before it breaks.", "Crash-testing for AI agents."
 
 ## Files to use
 
-- Production marks, lockups and icons: [`apps/web/public/brand`](../apps/web/public/brand).
+- Production marks, lockups and icons: [`apps/platform/public/brand`](../apps/platform/public/brand).
 - Asset generator (SVG, PNG, ICO):
   [`scripts/generate_brand_assets.py`](../scripts/generate_brand_assets.py).
 - Lockup letter outlines used by the generator: [`wordmark-outlines.svg`](wordmark-outlines.svg).
@@ -39,8 +39,8 @@ strain before it breaks.", "Crash-testing for AI agents."
 - Geometry, palette and severity values: [`design-spec.json`](design-spec.json).
 - Font source files, licenses, and pinned checksums: [`fonts`](fonts).
 - Canonical frontend colors and font declarations:
-  [`apps/web/src/brand.css`](../apps/web/src/brand.css).
-- Tailwind aliases: [`apps/web/src/styles.css`](../apps/web/src/styles.css).
+  [`apps/platform/src/brand.css`](../apps/platform/src/brand.css).
+- Tailwind aliases: [`apps/platform/src/styles.css`](../apps/platform/src/styles.css).
 - Exported palette snapshot: [`palette.json`](palette.json).
 
 The ZIP kit and PDF guide under `output/` still show the retired cobalt identity
@@ -131,7 +131,7 @@ Findings use signal bars plus the level as a word, not pills:
 Unfilled bars use the same color at low opacity. The bar icons meet 3:1
 against every light surface; the word beside them uses the normal text color.
 Use `SeverityIcon` and `SeverityLabel` from
-`apps/web/src/features/agents/severity.tsx`.
+`apps/platform/src/features/agents/severity.tsx`.
 
 Primary text contrast exceeds 16:1 in both themes, muted text exceeds 5.8:1 on
 every surface, and input borders exceed 3:1 on every surface they sit on.
@@ -173,7 +173,7 @@ Its home link provides the accessible name, so the nested logo images have empty
 alt text. Elsewhere, give a standalone wordmark the alt text `Strain`.
 
 The favicon, touch icon, manifest and light/dark `theme-color` are wired in
-`apps/web/index.html`. PNG and ICO files are rendered from the SVGs by the
+`apps/platform/index.html`. PNG and ICO files are rendered from the SVGs by the
 asset generator.
 The manifest provides home-screen metadata; it does not add offline support.
 Fonts are served from `public/fonts` without external font requests.
