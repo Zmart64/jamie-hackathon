@@ -13,7 +13,7 @@
   "dependencies": {
     "bot-avatars": "0.2.2",
     "class-variance-authority": "0.7.1",
-    "cn": "0.3.2",
+    "cn": "0.4.0",
     "lucide-react": "1.61.0",
     "radix-ui": "1.8.1",
     "react": "19.3.1",
