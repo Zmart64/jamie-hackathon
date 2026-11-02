@@ -13,8 +13,9 @@ prototype in `apps/platform`. Read `apps/platform/AGENTS.md` before frontend cha
   Node and pnpm pins aligned with `.node-version` and `package.json`.
   Setup installs dependencies, tools, and the shared pre-push hook.
   Prefer stable tool releases at least 30 days old; review breaking upgrades
-  separately. Dependabot delays routine updates by 30 days; urgent security fixes
-  may bypass the wait. Commit lockfile updates with dependency changes.
+  separately. Dependabot updates are paused; keep its configuration absent until
+  automated dependency PRs are wanted again. Commit lockfile updates with
+  dependency changes.
 - Run `make check` before finishing; it is the same command CI uses. Report any
   checks you could not run. `make format` applies safe lint fixes and formatting.
 - Python uses strict Pyright and requires public return annotations. Prefer
